@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'motion/react'
 
 export default function Dashboard() {
   const [activeSection, setActiveSection] = useState('overview')
@@ -25,10 +26,10 @@ export default function Dashboard() {
   }
 
   const enrolledCourses = [
-    { id: 1, title: 'AI Foundations & Applications', progress: 75, category: 'AI Literacy', color: '#0ea5e9' },
-    { id: 2, title: 'Discover Your Purpose', progress: 100, category: 'Assessment', color: '#6366f1' },
-    { id: 3, title: 'Thriving in VUCA World', progress: 45, category: 'Mindset', color: '#f59e0b' },
-    { id: 4, title: 'Cross-Functional Leadership', progress: 20, category: 'Rotation', color: '#10b981' },
+    { id: 1, title: 'AI Foundations & Applications', progress: 75, category: 'AI Literacy', color: 'from-cyan-500 to-blue-500' },
+    { id: 2, title: 'Discover Your Purpose', progress: 100, category: 'Assessment', color: 'from-indigo-500 to-purple-500' },
+    { id: 3, title: 'Thriving in VUCA World', progress: 45, category: 'Mindset', color: 'from-amber-500 to-orange-500' },
+    { id: 4, title: 'Cross-Functional Leadership', progress: 20, category: 'Rotation', color: 'from-emerald-500 to-teal-500' },
   ]
 
   const upcomingActivities = [
@@ -40,7 +41,7 @@ export default function Dashboard() {
   const renderContent = () => {
     switch (activeSection) {
       case 'overview':
-        return <OverviewContent stats={userStats} courses={enrolledCourses} activities={upcomingActivities} />
+        return <OverviewContent stats={userStats} courses={enrolledCourses} activities={upcomingActivities} setActiveSection={setActiveSection} />
       case 'assessment':
         return <AssessmentContent />
       case 'courses':
@@ -56,73 +57,105 @@ export default function Dashboard() {
       case 'settings':
         return <SettingsContent />
       default:
-        return <OverviewContent stats={userStats} courses={enrolledCourses} activities={upcomingActivities} />
+        return <OverviewContent stats={userStats} courses={enrolledCourses} activities={upcomingActivities} setActiveSection={setActiveSection} />
     }
   }
 
   return (
-    <div className="dashboard">
+    <div className="flex min-h-screen bg-slate-950 text-white">
       {/* Sidebar */}
-      <aside className={`dashboard-sidebar ${sidebarOpen ? 'open' : 'closed'}`}>
-        <div className="sidebar-header">
-          <div className="sidebar-brand" onClick={() => navigate('/')}>
-            <span className="brand-icon">📚</span>
-            {sidebarOpen && <span className="brand-text">DICC Learning</span>}
-          </div>
-          <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            {sidebarOpen ? '◀' : '▶'}
-          </button>
-        </div>
-
-        <nav className="sidebar-nav">
-          {menuItems.map(item => (
-            <button
-              key={item.id}
-              className={`sidebar-item ${activeSection === item.id ? 'active' : ''}`}
-              onClick={() => setActiveSection(item.id)}
+      <aside className={`fixed left-0 top-0 z-40 h-screen border-r border-slate-800 bg-slate-900 transition-all duration-300 ${sidebarOpen ? 'w-64' : 'w-20'}`}>
+        <div className="flex h-full flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-slate-800 p-4">
+            <div
+              className="flex cursor-pointer items-center gap-2"
+              onClick={() => navigate('/')}
             >
-              <span className="sidebar-icon">{item.icon}</span>
-              {sidebarOpen && <span className="sidebar-label">{item.label}</span>}
+              <span className="text-2xl">📚</span>
+              {sidebarOpen && (
+                <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text font-bold text-transparent">
+                  DICC Learning
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+            >
+              {sidebarOpen ? '◀' : '▶'}
             </button>
-          ))}
-        </nav>
+          </div>
 
-        <div className="sidebar-footer">
-          <button className="sidebar-item logout" onClick={() => navigate('/auth')}>
-            <span className="sidebar-icon">🚪</span>
-            {sidebarOpen && <span className="sidebar-label">Sign Out</span>}
-          </button>
+          {/* Navigation */}
+          <nav className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-1">
+              {menuItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition ${
+                    activeSection === item.id
+                      ? 'bg-gradient-to-r from-indigo-500/20 to-cyan-500/20 text-white'
+                      : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+                  }`}
+                >
+                  <span className="text-xl">{item.icon}</span>
+                  {sidebarOpen && <span className="text-sm font-medium">{item.label}</span>}
+                </button>
+              ))}
+            </div>
+          </nav>
+
+          {/* Footer */}
+          <div className="border-t border-slate-800 p-4">
+            <button
+              onClick={() => navigate('/auth')}
+              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-slate-400 transition hover:bg-red-500/10 hover:text-red-400"
+            >
+              <span className="text-xl">🚪</span>
+              {sidebarOpen && <span className="text-sm font-medium">Sign Out</span>}
+            </button>
+          </div>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="dashboard-main">
-        <header className="dashboard-header">
-          <div className="header-left">
-            <h1 className="page-title">
+      <main className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+        {/* Header */}
+        <header className="sticky top-0 z-30 border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl">
+          <div className="flex items-center justify-between px-8 py-4">
+            <h1 className="text-2xl font-bold">
               {menuItems.find(item => item.id === activeSection)?.label || 'Dashboard'}
             </h1>
-          </div>
-          <div className="header-right">
-            <div className="search-box">
-              <input type="text" placeholder="Search courses, topics..." />
-              <span className="search-icon">🔍</span>
-            </div>
-            <button className="notification-btn">
-              <span>🔔</span>
-              <span className="notification-badge">3</span>
-            </button>
-            <div className="user-menu">
-              <div className="user-avatar">JD</div>
-              <div className="user-info">
-                <span className="user-name">John Doe</span>
-                <span className="user-role">Learner</span>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search courses, topics..."
+                  className="w-72 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 pl-10 text-sm text-white placeholder-slate-500 transition focus:border-indigo-500 focus:outline-none"
+                />
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
+              </div>
+              <button className="relative rounded-xl bg-slate-900 p-2 text-slate-400 transition hover:text-white">
+                <span className="text-xl">🔔</span>
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
+              </button>
+              <div className="flex items-center gap-3 rounded-full bg-slate-900 py-2 pl-2 pr-4">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 text-sm font-bold">
+                  JD
+                </div>
+                <div className="text-left">
+                  <div className="text-sm font-semibold">John Doe</div>
+                  <div className="text-xs text-slate-500">Learner</div>
+                </div>
               </div>
             </div>
           </div>
         </header>
 
-        <div className="dashboard-content">
+        {/* Content */}
+        <div className="p-8">
           {renderContent()}
         </div>
       </main>
@@ -130,83 +163,84 @@ export default function Dashboard() {
   )
 }
 
-// Overview Section
-function OverviewContent({ stats, courses, activities }) {
+function OverviewContent({ stats, courses, activities, setActiveSection }) {
   return (
-    <div className="overview">
-      {/* Stats Cards */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #6366f1, #8b5cf6)' }}>📖</div>
-          <div className="stat-info">
-            <span className="stat-value">{stats.coursesCompleted}</span>
-            <span className="stat-label">Courses Completed</span>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      {/* Stats */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {[
+          { label: 'Courses Completed', value: stats.coursesCompleted, icon: '📖', gradient: 'from-indigo-500 to-purple-500' },
+          { label: 'Hours Learned', value: `${stats.hoursLearned}h`, icon: '⏱️', gradient: 'from-cyan-500 to-blue-500' },
+          { label: 'Assessment Score', value: `${stats.assessmentScore}%`, icon: '🎯', gradient: 'from-amber-500 to-orange-500' },
+          { label: 'Certificates', value: stats.certificates, icon: '🏆', gradient: 'from-emerald-500 to-teal-500' },
+        ].map((stat, idx) => (
+          <div key={idx} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="flex items-center gap-4">
+              <div className={`flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient} text-2xl`}>
+                {stat.icon}
+              </div>
+              <div>
+                <div className="text-3xl font-bold">{stat.value}</div>
+                <div className="text-sm text-slate-500">{stat.label}</div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #0ea5e9, #06b6d4)' }}>⏱️</div>
-          <div className="stat-info">
-            <span className="stat-value">{stats.hoursLearned}h</span>
-            <span className="stat-label">Hours Learned</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #f59e0b, #f97316)' }}>🎯</div>
-          <div className="stat-info">
-            <span className="stat-value">{stats.assessmentScore}%</span>
-            <span className="stat-label">Assessment Score</span>
-          </div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>🏆</div>
-          <div className="stat-info">
-            <span className="stat-value">{stats.certificates}</span>
-            <span className="stat-label">Certificates</span>
-          </div>
-        </div>
+        ))}
       </div>
 
-      <div className="overview-grid">
+      <div className="grid gap-8 lg:grid-cols-3">
         {/* Continue Learning */}
-        <div className="dashboard-card continue-learning">
-          <div className="card-header">
-            <h2>Continue Learning</h2>
-            <a href="#" className="view-all">View All</a>
+        <div className="lg:col-span-2 rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-lg font-bold">Continue Learning</h2>
+            <button className="text-sm text-indigo-400 hover:text-indigo-300">View All</button>
           </div>
-          <div className="course-list">
-            {courses.map(course => (
-              <div key={course.id} className="course-item">
-                <div className="course-color" style={{ background: course.color }}></div>
-                <div className="course-details">
-                  <span className="course-category">{course.category}</span>
-                  <h3>{course.title}</h3>
-                  <div className="progress-container">
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: `${course.progress}%`, background: course.color }}></div>
+          <div className="space-y-4">
+            {courses.map((course) => (
+              <div key={course.id} className="flex items-center gap-4 rounded-xl bg-slate-800/50 p-4 transition hover:bg-slate-800">
+                <div className={`h-16 w-2 rounded-full bg-gradient-to-b ${course.color}`}></div>
+                <div className="flex-1">
+                  <div className="text-xs font-medium uppercase text-slate-500">{course.category}</div>
+                  <div className="font-semibold">{course.title}</div>
+                  <div className="mt-2 flex items-center gap-3">
+                    <div className="h-2 flex-1 rounded-full bg-slate-700">
+                      <div
+                        className={`h-full rounded-full bg-gradient-to-r ${course.color}`}
+                        style={{ width: `${course.progress}%` }}
+                      ></div>
                     </div>
-                    <span className="progress-text">{course.progress}%</span>
+                    <span className="text-sm text-slate-400">{course.progress}%</span>
                   </div>
                 </div>
-                <button className="continue-btn">{course.progress === 100 ? 'Review' : 'Continue'}</button>
+                <button className="rounded-lg bg-gradient-to-r from-indigo-500 to-cyan-500 px-4 py-2 text-sm font-semibold transition hover:shadow-lg hover:shadow-indigo-500/25">
+                  {course.progress === 100 ? 'Review' : 'Continue'}
+                </button>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Upcoming Activities */}
-        <div className="dashboard-card upcoming">
-          <div className="card-header">
-            <h2>Upcoming Activities</h2>
-          </div>
-          <div className="activity-list">
-            {activities.map(activity => (
-              <div key={activity.id} className="activity-item">
-                <div className={`activity-icon ${activity.type}`}>
+        {/* Upcoming */}
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+          <h2 className="mb-6 text-lg font-bold">Upcoming Activities</h2>
+          <div className="space-y-4">
+            {activities.map((activity) => (
+              <div key={activity.id} className="flex items-start gap-4 rounded-xl bg-slate-800/50 p-4">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                  activity.type === 'workshop' ? 'bg-indigo-500/20 text-indigo-400' :
+                  activity.type === 'deadline' ? 'bg-red-500/20 text-red-400' :
+                  'bg-emerald-500/20 text-emerald-400'
+                }`}>
                   {activity.type === 'workshop' ? '📺' : activity.type === 'deadline' ? '📅' : '🔄'}
                 </div>
-                <div className="activity-info">
-                  <h4>{activity.title}</h4>
-                  <span>{activity.time}</span>
+                <div>
+                  <div className="font-medium text-sm">{activity.title}</div>
+                  <div className="text-xs text-slate-500">{activity.time}</div>
                 </div>
               </div>
             ))}
@@ -215,34 +249,32 @@ function OverviewContent({ stats, courses, activities }) {
       </div>
 
       {/* Quick Actions */}
-      <div className="quick-actions">
-        <h2>Quick Actions</h2>
-        <div className="actions-grid">
-          <button className="action-card">
-            <span className="action-icon">🎯</span>
-            <span className="action-label">Take Assessment</span>
-          </button>
-          <button className="action-card">
-            <span className="action-icon">📚</span>
-            <span className="action-label">Browse Courses</span>
-          </button>
-          <button className="action-card">
-            <span className="action-icon">🤖</span>
-            <span className="action-label">AI Tools</span>
-          </button>
-          <button className="action-card">
-            <span className="action-icon">💬</span>
-            <span className="action-label">Get Help</span>
-          </button>
+      <div>
+        <h2 className="mb-4 text-lg font-bold">Quick Actions</h2>
+        <div className="grid gap-4 md:grid-cols-4">
+          {[
+            { icon: '🎯', label: 'Take Assessment', action: () => setActiveSection('assessment') },
+            { icon: '📚', label: 'Browse Courses', action: () => setActiveSection('courses') },
+            { icon: '🤖', label: 'AI Tools', action: () => setActiveSection('ai-literacy') },
+            { icon: '💬', label: 'Get Help', action: () => {} },
+          ].map((item, idx) => (
+            <button
+              key={idx}
+              onClick={item.action}
+              className="flex flex-col items-center gap-3 rounded-2xl border border-slate-800 bg-slate-900/50 p-6 transition hover:border-indigo-500/50 hover:bg-slate-800"
+            >
+              <span className="text-3xl">{item.icon}</span>
+              <span className="font-medium">{item.label}</span>
+            </button>
+          ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-// Assessment Section
 function AssessmentContent() {
-  const assessmentTypes = [
+  const assessments = [
     { id: 1, title: 'Career Interest Inventory', description: 'Discover your ideal career path based on interests and values', duration: '20 min', status: 'completed', score: 92 },
     { id: 2, title: 'Skills Gap Analysis', description: 'Identify areas for growth and recommended learning paths', duration: '15 min', status: 'completed', score: 85 },
     { id: 3, title: 'Learning Style Assessment', description: 'Understand how you learn best to optimize your journey', duration: '10 min', status: 'in-progress' },
@@ -250,85 +282,140 @@ function AssessmentContent() {
   ]
 
   return (
-    <div className="assessment-section">
-      <div className="assessment-hero">
-        <div className="assessment-hero-content">
-          <h2>Your Skills Assessment Journey</h2>
-          <p>Complete assessments to unlock personalized course recommendations and career insights.</p>
-          <div className="assessment-progress">
-            <div className="assessment-progress-bar">
-              <div className="assessment-progress-fill" style={{ width: '50%' }}></div>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      {/* Hero */}
+      <div className="rounded-3xl bg-gradient-to-r from-indigo-600 to-purple-600 p-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="mb-2 text-2xl font-bold">Your Skills Assessment Journey</h2>
+            <p className="mb-4 text-white/80">Complete assessments to unlock personalized course recommendations.</p>
+            <div className="flex items-center gap-4">
+              <div className="h-3 w-48 rounded-full bg-white/30">
+                <div className="h-full w-1/2 rounded-full bg-white"></div>
+              </div>
+              <span className="text-sm">2 of 4 completed</span>
             </div>
-            <span>2 of 4 completed</span>
           </div>
+          <span className="text-6xl">🎯</span>
         </div>
-        <div className="assessment-hero-visual">🎯</div>
       </div>
 
-      <div className="assessment-grid">
-        {assessmentTypes.map(assessment => (
-          <div key={assessment.id} className={`assessment-card ${assessment.status}`}>
-            <div className="assessment-status-badge">{assessment.status.replace('-', ' ')}</div>
-            <h3>{assessment.title}</h3>
-            <p>{assessment.description}</p>
-            <div className="assessment-meta">
+      {/* Cards */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {assessments.map((assessment) => (
+          <div key={assessment.id} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="mb-4 flex items-start justify-between">
+              <h3 className="text-lg font-bold">{assessment.title}</h3>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                assessment.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' :
+                assessment.status === 'in-progress' ? 'bg-amber-500/20 text-amber-400' :
+                'bg-slate-500/20 text-slate-400'
+              }`}>
+                {assessment.status.replace('-', ' ')}
+              </span>
+            </div>
+            <p className="mb-4 text-sm text-slate-400">{assessment.description}</p>
+            <div className="mb-4 flex gap-4 text-sm text-slate-500">
               <span>⏱️ {assessment.duration}</span>
               {assessment.score && <span>Score: {assessment.score}%</span>}
             </div>
-            <button className="btn btn-primary" disabled={assessment.status === 'locked'}>
+            <button
+              disabled={assessment.status === 'locked'}
+              className={`w-full rounded-xl py-3 font-semibold transition ${
+                assessment.status === 'locked'
+                  ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-indigo-500 to-cyan-500 text-white hover:shadow-lg hover:shadow-indigo-500/25'
+              }`}
+            >
               {assessment.status === 'completed' ? 'View Results' : assessment.status === 'in-progress' ? 'Continue' : 'Start'}
             </button>
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-// Courses Section
 function CoursesContent({ courses }) {
   const allCourses = [
     ...courses,
-    { id: 5, title: 'Data-Driven Decision Making', progress: 0, category: 'AI Literacy', color: '#0ea5e9' },
-    { id: 6, title: 'Emotional Intelligence at Work', progress: 0, category: 'Mindset', color: '#f59e0b' },
+    { id: 5, title: 'Data-Driven Decision Making', progress: 0, category: 'AI Literacy', color: 'from-cyan-500 to-blue-500' },
+    { id: 6, title: 'Emotional Intelligence at Work', progress: 0, category: 'Mindset', color: 'from-amber-500 to-orange-500' },
   ]
 
+  const [filter, setFilter] = useState('all')
+
+  const filteredCourses = allCourses.filter(course => {
+    if (filter === 'all') return true
+    if (filter === 'in-progress') return course.progress > 0 && course.progress < 100
+    if (filter === 'completed') return course.progress === 100
+    if (filter === 'not-started') return course.progress === 0
+    return true
+  })
+
   return (
-    <div className="courses-section">
-      <div className="courses-filter">
-        <button className="filter-btn active">All Courses</button>
-        <button className="filter-btn">In Progress</button>
-        <button className="filter-btn">Completed</button>
-        <button className="filter-btn">Not Started</button>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-6"
+    >
+      {/* Filter */}
+      <div className="flex gap-2">
+        {['all', 'in-progress', 'completed', 'not-started'].map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+              filter === f
+                ? 'bg-gradient-to-r from-indigo-500 to-cyan-500 text-white'
+                : 'bg-slate-800 text-slate-400 hover:text-white'
+            }`}
+          >
+            {f.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+          </button>
+        ))}
       </div>
 
-      <div className="courses-grid-dashboard">
-        {allCourses.map(course => (
-          <div key={course.id} className="course-card-dashboard">
-            <div className="course-thumbnail" style={{ background: course.color }}>
-              {course.progress === 100 && <span className="completed-badge">✓ Completed</span>}
+      {/* Grid */}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {filteredCourses.map((course) => (
+          <div key={course.id} className="rounded-2xl border border-slate-800 bg-slate-900/50 overflow-hidden">
+            <div className={`h-32 bg-gradient-to-br ${course.color} flex items-start justify-end p-4`}>
+              {course.progress === 100 && (
+                <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-slate-900">
+                  ✓ Completed
+                </span>
+              )}
             </div>
-            <div className="course-card-content">
-              <span className="course-tag">{course.category}</span>
-              <h3>{course.title}</h3>
-              <div className="course-progress-wrapper">
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${course.progress}%`, background: course.color }}></div>
+            <div className="p-6">
+              <span className="text-xs font-semibold uppercase text-indigo-400">{course.category}</span>
+              <h3 className="mt-2 font-bold">{course.title}</h3>
+              <div className="mt-4 flex items-center gap-3">
+                <div className="h-2 flex-1 rounded-full bg-slate-700">
+                  <div
+                    className={`h-full rounded-full bg-gradient-to-r ${course.color}`}
+                    style={{ width: `${course.progress}%` }}
+                  ></div>
                 </div>
-                <span>{course.progress}% complete</span>
+                <span className="text-sm text-slate-400">{course.progress}%</span>
               </div>
-              <button className="btn btn-primary">
+              <button className="mt-4 w-full rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 py-3 font-semibold transition hover:shadow-lg hover:shadow-indigo-500/25">
                 {course.progress === 0 ? 'Start Course' : course.progress === 100 ? 'Review' : 'Continue'}
               </button>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-// AI Literacy Section
 function AILiteracyContent() {
   const modules = [
     { id: 1, title: 'Introduction to AI', lessons: 8, completed: 8, icon: '🧠' },
@@ -339,129 +426,151 @@ function AILiteracyContent() {
   ]
 
   return (
-    <div className="ai-literacy-section">
-      <div className="ai-hero">
-        <div className="ai-hero-content">
-          <h2>Master AI Literacy</h2>
-          <p>Learn to understand, leverage, and collaborate with AI to amplify your capabilities.</p>
-        </div>
-        <div className="ai-stats">
-          <div className="ai-stat">
-            <span className="ai-stat-value">21</span>
-            <span className="ai-stat-label">Lessons Completed</span>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      {/* Hero */}
+      <div className="rounded-3xl bg-gradient-to-r from-cyan-600 to-blue-600 p-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="mb-2 text-2xl font-bold">Master AI Literacy</h2>
+            <p className="text-white/80">Learn to understand, leverage, and collaborate with AI.</p>
           </div>
-          <div className="ai-stat">
-            <span className="ai-stat-value">44</span>
-            <span className="ai-stat-label">Total Lessons</span>
+          <div className="flex gap-8 text-center">
+            <div>
+              <div className="text-3xl font-bold">21</div>
+              <div className="text-sm text-white/80">Lessons Done</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold">44</div>
+              <div className="text-sm text-white/80">Total Lessons</div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="modules-list">
-        {modules.map(module => (
-          <div key={module.id} className="module-card">
-            <div className="module-icon">{module.icon}</div>
-            <div className="module-info">
-              <h3>{module.title}</h3>
-              <div className="module-progress">
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${(module.completed / module.lessons) * 100}%` }}></div>
+      {/* Modules */}
+      <div className="space-y-4">
+        {modules.map((module) => (
+          <div key={module.id} className="flex items-center gap-6 rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-slate-800 text-3xl">
+              {module.icon}
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold">{module.title}</h3>
+              <div className="mt-2 flex items-center gap-4">
+                <div className="h-2 w-48 rounded-full bg-slate-700">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-500"
+                    style={{ width: `${(module.completed / module.lessons) * 100}%` }}
+                  ></div>
                 </div>
-                <span>{module.completed}/{module.lessons} lessons</span>
+                <span className="text-sm text-slate-400">{module.completed}/{module.lessons} lessons</span>
               </div>
             </div>
-            <button className="btn btn-outline">
+            <button className="rounded-xl border border-slate-700 px-6 py-3 font-semibold transition hover:bg-slate-800">
               {module.completed === 0 ? 'Start' : module.completed === module.lessons ? 'Review' : 'Continue'}
             </button>
           </div>
         ))}
       </div>
 
-      <div className="ai-tools-section">
-        <h2>AI Tools Playground</h2>
-        <div className="tools-grid">
-          <div className="tool-card">
-            <span className="tool-icon">💬</span>
-            <h3>ChatBot Assistant</h3>
-            <p>Practice prompting techniques</p>
-            <button className="btn btn-primary">Launch</button>
-          </div>
-          <div className="tool-card">
-            <span className="tool-icon">🎨</span>
-            <h3>Image Generator</h3>
-            <p>Create AI-generated visuals</p>
-            <button className="btn btn-primary">Launch</button>
-          </div>
-          <div className="tool-card">
-            <span className="tool-icon">📝</span>
-            <h3>Writing Assistant</h3>
-            <p>Enhance your writing with AI</p>
-            <button className="btn btn-primary">Launch</button>
-          </div>
+      {/* Tools */}
+      <div>
+        <h2 className="mb-4 text-lg font-bold">AI Tools Playground</h2>
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            { icon: '💬', title: 'ChatBot Assistant', desc: 'Practice prompting techniques' },
+            { icon: '🎨', title: 'Image Generator', desc: 'Create AI-generated visuals' },
+            { icon: '📝', title: 'Writing Assistant', desc: 'Enhance your writing with AI' },
+          ].map((tool, idx) => (
+            <div key={idx} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 text-center">
+              <span className="text-4xl">{tool.icon}</span>
+              <h3 className="mt-4 font-bold">{tool.title}</h3>
+              <p className="mt-2 text-sm text-slate-400">{tool.desc}</p>
+              <button className="mt-4 w-full rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 py-3 font-semibold transition hover:shadow-lg hover:shadow-indigo-500/25">
+                Launch
+              </button>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-// VUCA Section
 function VUCAContent() {
   const vucaModules = [
-    { letter: 'V', title: 'Volatility', description: 'Embrace change and develop adaptability', progress: 80, color: '#6366f1' },
-    { letter: 'U', title: 'Uncertainty', description: 'Navigate ambiguity with confidence', progress: 60, color: '#0ea5e9' },
-    { letter: 'C', title: 'Complexity', description: 'Simplify complex challenges', progress: 40, color: '#f59e0b' },
-    { letter: 'A', title: 'Ambiguity', description: 'Make decisions with incomplete info', progress: 20, color: '#10b981' },
+    { letter: 'V', title: 'Volatility', description: 'Embrace change and develop adaptability', progress: 80, color: 'from-indigo-500 to-purple-500' },
+    { letter: 'U', title: 'Uncertainty', description: 'Navigate ambiguity with confidence', progress: 60, color: 'from-cyan-500 to-blue-500' },
+    { letter: 'C', title: 'Complexity', description: 'Simplify complex challenges', progress: 40, color: 'from-amber-500 to-orange-500' },
+    { letter: 'A', title: 'Ambiguity', description: 'Make decisions with incomplete info', progress: 20, color: 'from-emerald-500 to-teal-500' },
   ]
 
   return (
-    <div className="vuca-section">
-      <div className="vuca-hero">
-        <h2>Navigate the VUCA World</h2>
-        <p>Develop the mindset and skills to thrive in Volatile, Uncertain, Complex, and Ambiguous environments.</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      {/* Hero */}
+      <div className="text-center">
+        <h2 className="mb-2 text-3xl font-bold">Navigate the VUCA World</h2>
+        <p className="mx-auto max-w-xl text-slate-400">
+          Develop the mindset and skills to thrive in Volatile, Uncertain, Complex, and Ambiguous environments.
+        </p>
       </div>
 
-      <div className="vuca-grid">
-        {vucaModules.map(module => (
-          <div key={module.letter} className="vuca-card" style={{ borderTopColor: module.color }}>
-            <div className="vuca-letter" style={{ color: module.color }}>{module.letter}</div>
-            <h3>{module.title}</h3>
-            <p>{module.description}</p>
-            <div className="vuca-progress">
-              <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${module.progress}%`, background: module.color }}></div>
-              </div>
-              <span>{module.progress}% complete</span>
+      {/* Cards */}
+      <div className="grid gap-6 md:grid-cols-2">
+        {vucaModules.map((module) => (
+          <div key={module.letter} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+            <div className={`mb-4 text-5xl font-black bg-gradient-to-r ${module.color} bg-clip-text text-transparent`}>
+              {module.letter}
             </div>
-            <button className="btn btn-outline">Continue Learning</button>
+            <h3 className="text-xl font-bold">{module.title}</h3>
+            <p className="mt-2 text-sm text-slate-400">{module.description}</p>
+            <div className="mt-4">
+              <div className="h-2 rounded-full bg-slate-700">
+                <div
+                  className={`h-full rounded-full bg-gradient-to-r ${module.color}`}
+                  style={{ width: `${module.progress}%` }}
+                ></div>
+              </div>
+              <span className="mt-2 block text-sm text-slate-400">{module.progress}% complete</span>
+            </div>
+            <button className="mt-4 w-full rounded-xl border border-slate-700 py-3 font-semibold transition hover:bg-slate-800">
+              Continue Learning
+            </button>
           </div>
         ))}
       </div>
 
-      <div className="vuca-resources">
-        <h2>Resources & Tools</h2>
-        <div className="resources-grid">
-          <div className="resource-card">
-            <span className="resource-icon">📚</span>
-            <h3>Case Studies</h3>
-            <p>Real-world VUCA scenarios</p>
-          </div>
-          <div className="resource-card">
-            <span className="resource-icon">🎮</span>
-            <h3>Simulations</h3>
-            <p>Interactive decision games</p>
-          </div>
-          <div className="resource-card">
-            <span className="resource-icon">🧘</span>
-            <h3>Mindfulness</h3>
-            <p>Stress management tools</p>
-          </div>
+      {/* Resources */}
+      <div>
+        <h2 className="mb-4 text-lg font-bold">Resources & Tools</h2>
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            { icon: '📚', title: 'Case Studies', desc: 'Real-world VUCA scenarios' },
+            { icon: '🎮', title: 'Simulations', desc: 'Interactive decision games' },
+            { icon: '🧘', title: 'Mindfulness', desc: 'Stress management tools' },
+          ].map((resource, idx) => (
+            <div key={idx} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6 text-center">
+              <span className="text-3xl">{resource.icon}</span>
+              <h3 className="mt-3 font-bold">{resource.title}</h3>
+              <p className="mt-1 text-sm text-slate-400">{resource.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-// Rotation Section
 function RotationContent() {
   const rotations = [
     { id: 1, department: 'Marketing', dates: 'Jan 15 - Feb 15', status: 'completed', rating: 4.8 },
@@ -471,57 +580,80 @@ function RotationContent() {
   ]
 
   return (
-    <div className="rotation-section">
-      <div className="rotation-hero">
-        <h2>Rotational Programs</h2>
-        <p>Gain diverse perspectives through cross-functional experiences with different departments.</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      {/* Hero */}
+      <div className="text-center">
+        <h2 className="mb-2 text-3xl font-bold">Rotational Programs</h2>
+        <p className="mx-auto max-w-xl text-slate-400">
+          Gain diverse perspectives through cross-functional experiences with different departments.
+        </p>
       </div>
 
-      <div className="rotation-timeline">
-        <h3>Your Rotation Journey</h3>
-        <div className="timeline">
-          {rotations.map((rotation, index) => (
-            <div key={rotation.id} className={`timeline-item ${rotation.status}`}>
-              <div className="timeline-marker"></div>
-              <div className="timeline-content">
-                <h4>{rotation.department}</h4>
-                <span className="timeline-dates">{rotation.dates}</span>
-                <span className={`timeline-status ${rotation.status}`}>{rotation.status}</span>
-                {rotation.rating && <span className="timeline-rating">★ {rotation.rating}</span>}
+      {/* Timeline */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+        <h3 className="mb-6 font-bold">Your Rotation Journey</h3>
+        <div className="space-y-4">
+          {rotations.map((rotation, idx) => (
+            <div key={rotation.id} className="flex items-center gap-4">
+              <div className={`h-4 w-4 rounded-full ${
+                rotation.status === 'completed' ? 'bg-emerald-500' :
+                rotation.status === 'current' ? 'bg-indigo-500 ring-4 ring-indigo-500/30' :
+                rotation.status === 'upcoming' ? 'bg-amber-500' :
+                'bg-slate-600'
+              }`}></div>
+              <div className="flex flex-1 items-center justify-between rounded-xl bg-slate-800/50 p-4">
+                <div>
+                  <h4 className="font-semibold">{rotation.department}</h4>
+                  <span className="text-sm text-slate-500">{rotation.dates}</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                    rotation.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400' :
+                    rotation.status === 'current' ? 'bg-indigo-500/20 text-indigo-400' :
+                    rotation.status === 'upcoming' ? 'bg-amber-500/20 text-amber-400' :
+                    'bg-slate-500/20 text-slate-400'
+                  }`}>
+                    {rotation.status}
+                  </span>
+                  {rotation.rating && <span className="text-amber-400">★ {rotation.rating}</span>}
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="available-rotations">
-        <h3>Available Rotations</h3>
-        <div className="rotation-cards">
-          <div className="rotation-card">
-            <h4>Product Development</h4>
-            <p>Work with product teams to understand innovation cycles</p>
-            <span className="rotation-duration">4 weeks</span>
-            <button className="btn btn-primary">Apply</button>
-          </div>
-          <div className="rotation-card">
-            <h4>Customer Success</h4>
-            <p>Learn customer-facing skills and relationship management</p>
-            <span className="rotation-duration">4 weeks</span>
-            <button className="btn btn-primary">Apply</button>
-          </div>
-          <div className="rotation-card">
-            <h4>Data Analytics</h4>
-            <p>Explore data-driven decision making processes</p>
-            <span className="rotation-duration">6 weeks</span>
-            <button className="btn btn-primary">Apply</button>
-          </div>
+      {/* Available */}
+      <div>
+        <h3 className="mb-4 font-bold">Available Rotations</h3>
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            { title: 'Product Development', desc: 'Work with product teams to understand innovation cycles', duration: '4 weeks' },
+            { title: 'Customer Success', desc: 'Learn customer-facing skills and relationship management', duration: '4 weeks' },
+            { title: 'Data Analytics', desc: 'Explore data-driven decision making processes', duration: '6 weeks' },
+          ].map((rotation, idx) => (
+            <div key={idx} className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+              <h4 className="font-bold">{rotation.title}</h4>
+              <p className="mt-2 text-sm text-slate-400">{rotation.desc}</p>
+              <span className="mt-3 inline-block rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-400">
+                {rotation.duration}
+              </span>
+              <button className="mt-4 w-full rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 py-3 font-semibold transition hover:shadow-lg hover:shadow-indigo-500/25">
+                Apply
+              </button>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-// Certificates Section
 function CertificatesContent() {
   const certificates = [
     { id: 1, title: 'AI Foundations', date: 'Jan 15, 2024', badge: '🤖' },
@@ -531,95 +663,132 @@ function CertificatesContent() {
   ]
 
   return (
-    <div className="certificates-section">
-      <div className="certificates-hero">
-        <h2>Your Achievements</h2>
-        <p>Showcase your learning accomplishments and professional growth.</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-8"
+    >
+      <div className="text-center">
+        <h2 className="mb-2 text-3xl font-bold">Your Achievements</h2>
+        <p className="text-slate-400">Showcase your learning accomplishments and professional growth.</p>
       </div>
 
-      <div className="certificates-grid">
-        {certificates.map(cert => (
-          <div key={cert.id} className="certificate-card">
-            <div className="certificate-badge">{cert.badge}</div>
-            <h3>{cert.title}</h3>
-            <span className="certificate-date">Earned: {cert.date}</span>
-            <div className="certificate-actions">
-              <button className="btn btn-outline">View</button>
-              <button className="btn btn-primary">Share</button>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {certificates.map((cert) => (
+          <div key={cert.id} className="rounded-2xl border-2 border-dashed border-slate-700 bg-slate-900/50 p-6 text-center">
+            <span className="text-5xl">{cert.badge}</span>
+            <h3 className="mt-4 font-bold">{cert.title}</h3>
+            <p className="mt-2 text-sm text-slate-500">Earned: {cert.date}</p>
+            <div className="mt-4 flex gap-2">
+              <button className="flex-1 rounded-xl border border-slate-700 py-2 text-sm font-semibold transition hover:bg-slate-800">
+                View
+              </button>
+              <button className="flex-1 rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 py-2 text-sm font-semibold transition hover:shadow-lg hover:shadow-indigo-500/25">
+                Share
+              </button>
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-// Settings Section
 function SettingsContent() {
   return (
-    <div className="settings-section">
-      <div className="settings-group">
-        <h2>Profile Settings</h2>
-        <div className="settings-form">
-          <div className="form-group">
-            <label>Full Name</label>
-            <input type="text" defaultValue="John Doe" />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="max-w-2xl space-y-6"
+    >
+      {/* Profile */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+        <h2 className="mb-6 text-lg font-bold border-b border-slate-800 pb-4">Profile Settings</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">Full Name</label>
+            <input
+              type="text"
+              defaultValue="John Doe"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white transition focus:border-indigo-500 focus:outline-none"
+            />
           </div>
-          <div className="form-group">
-            <label>Email Address</label>
-            <input type="email" defaultValue="john.doe@example.com" />
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">Email Address</label>
+            <input
+              type="email"
+              defaultValue="john.doe@example.com"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white transition focus:border-indigo-500 focus:outline-none"
+            />
           </div>
-          <div className="form-group">
-            <label>Bio</label>
-            <textarea defaultValue="Passionate learner exploring AI and future-ready skills."></textarea>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">Bio</label>
+            <textarea
+              defaultValue="Passionate learner exploring AI and future-ready skills."
+              rows={3}
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white transition focus:border-indigo-500 focus:outline-none resize-none"
+            />
           </div>
-          <button className="btn btn-primary">Save Changes</button>
+          <button className="rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 px-6 py-3 font-semibold transition hover:shadow-lg hover:shadow-indigo-500/25">
+            Save Changes
+          </button>
         </div>
       </div>
 
-      <div className="settings-group">
-        <h2>Notifications</h2>
-        <div className="settings-toggles">
-          <label className="toggle-item">
-            <span>Email notifications</span>
-            <input type="checkbox" defaultChecked />
-          </label>
-          <label className="toggle-item">
-            <span>Course reminders</span>
-            <input type="checkbox" defaultChecked />
-          </label>
-          <label className="toggle-item">
-            <span>Assessment deadlines</span>
-            <input type="checkbox" defaultChecked />
-          </label>
-          <label className="toggle-item">
-            <span>Community updates</span>
-            <input type="checkbox" />
-          </label>
+      {/* Notifications */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+        <h2 className="mb-6 text-lg font-bold border-b border-slate-800 pb-4">Notifications</h2>
+        <div className="space-y-4">
+          {[
+            { label: 'Email notifications', checked: true },
+            { label: 'Course reminders', checked: true },
+            { label: 'Assessment deadlines', checked: true },
+            { label: 'Community updates', checked: false },
+          ].map((item, idx) => (
+            <label key={idx} className="flex cursor-pointer items-center justify-between rounded-xl bg-slate-800/50 p-4">
+              <span className="text-slate-300">{item.label}</span>
+              <input
+                type="checkbox"
+                defaultChecked={item.checked}
+                className="h-5 w-5 rounded border-slate-600 bg-slate-700 text-indigo-500 focus:ring-indigo-500"
+              />
+            </label>
+          ))}
         </div>
       </div>
 
-      <div className="settings-group">
-        <h2>Learning Preferences</h2>
-        <div className="form-group">
-          <label>Preferred Learning Style</label>
-          <select defaultValue="visual">
-            <option value="visual">Visual</option>
-            <option value="auditory">Auditory</option>
-            <option value="reading">Reading/Writing</option>
-            <option value="kinesthetic">Hands-on</option>
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Daily Learning Goal</label>
-          <select defaultValue="30">
-            <option value="15">15 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="60">1 hour</option>
-            <option value="120">2 hours</option>
-          </select>
+      {/* Learning Preferences */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-6">
+        <h2 className="mb-6 text-lg font-bold border-b border-slate-800 pb-4">Learning Preferences</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">Preferred Learning Style</label>
+            <select
+              defaultValue="visual"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white transition focus:border-indigo-500 focus:outline-none"
+            >
+              <option value="visual">Visual</option>
+              <option value="auditory">Auditory</option>
+              <option value="reading">Reading/Writing</option>
+              <option value="kinesthetic">Hands-on</option>
+            </select>
+          </div>
+          <div>
+            <label className="mb-2 block text-sm font-medium text-slate-300">Daily Learning Goal</label>
+            <select
+              defaultValue="30"
+              className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white transition focus:border-indigo-500 focus:outline-none"
+            >
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="120">2 hours</option>
+            </select>
+          </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
