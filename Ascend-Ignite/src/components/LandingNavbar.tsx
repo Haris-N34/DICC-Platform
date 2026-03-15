@@ -37,20 +37,20 @@ export const LandingNavbar = () => {
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50">
-            <div className="mx-auto max-w-6xl px-3 py-3 sm:px-4 md:px-6">
-                <div className="relative flex items-center justify-between gap-3 rounded-2xl border border-white/30 bg-white/40 px-3 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] backdrop-blur-2xl backdrop-saturate-150 sm:px-4">
+            <div className="mx-auto max-w-6xl px-4 py-3 md:px-6">
+                <div className="flex items-center justify-between rounded-2xl border border-white/30 bg-white/40 px-4 py-2.5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] backdrop-blur-2xl backdrop-saturate-150">
                     {/* Logo */}
-                    <Link to="/" className="flex min-w-0 flex-1 items-center gap-2 pr-2 sm:gap-3 sm:pr-3 lg:flex-none">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+                    <Link to="/" className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
                             <Flame className="h-4 w-4" />
                         </div>
-                        <span className="min-w-0 text-[clamp(0.82rem,3.6vw,0.98rem)] font-semibold tracking-[-0.01em] text-slate-950 sm:text-[0.98rem]">
+                        <span className="text-[0.98rem] font-semibold tracking-[-0.01em] text-slate-950">
                             Ascend Ignite
                         </span>
                     </Link>
 
                     {/* Desktop nav */}
-                    <div className="hidden items-center justify-center gap-8 lg:absolute lg:left-1/2 lg:flex lg:-translate-x-1/2">
+                    <div className="hidden items-center gap-1 lg:flex">
                         {navItems.map((item) =>
                             item.children ? (
                                 <DropdownItem
@@ -73,7 +73,7 @@ export const LandingNavbar = () => {
                     </div>
 
                     {/* Desktop auth */}
-                    <div className="hidden items-center gap-2 lg:ml-auto lg:flex">
+                    <div className="hidden items-center gap-2 lg:flex">
                         <Link to="/onboarding">
                             <Button variant="outline" size="sm" className="border-slate-200/60 bg-white/50 text-slate-700 backdrop-blur">
                                 Log in
@@ -86,7 +86,7 @@ export const LandingNavbar = () => {
 
                     {/* Mobile toggle */}
                     <button
-                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-white/60 lg:hidden"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 hover:bg-white/60 lg:hidden"
                         onClick={() => setMobileOpen(!mobileOpen)}
                     >
                         {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
