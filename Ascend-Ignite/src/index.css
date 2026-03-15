@@ -203,7 +203,7 @@
   @media (max-width: 768px) {
     .hero-spline-stage {
       min-height: 100vh;
-      transform: scale(0.86) translate(0%, 2%);
+      transform: scale(1.04) translate(-2%, 4%);
     }
 
     .hero-side-line {
@@ -217,17 +217,6 @@
 
     .hero-side-line-right {
       right: 3%;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .hero-spline-stage {
-      transform: scale(0.74) translate(0%, 0%);
-    }
-
-    .hero-side-line {
-      top: 16%;
-      bottom: 14%;
     }
   }
 }
