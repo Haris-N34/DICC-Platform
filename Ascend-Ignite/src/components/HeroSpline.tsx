@@ -12,13 +12,16 @@ export const HeroSpline = () => {
             }
 
             if (window.innerWidth <= 480) {
-                splineRef.current.setZoom(0.62);
+                splineRef.current.setZoom(0.36);
                 return;
             }
 
             if (window.innerWidth <= 768) {
-                splineRef.current.setZoom(0.78);
+                splineRef.current.setZoom(0.56);
+                return;
             }
+
+            splineRef.current.setZoom(1);
         };
 
         applyMobileZoom();
@@ -38,9 +41,11 @@ export const HeroSpline = () => {
                         splineRef.current = app;
 
                         if (window.innerWidth <= 480) {
-                            app.setZoom(0.62);
+                            app.setZoom(0.36);
                         } else if (window.innerWidth <= 768) {
-                            app.setZoom(0.78);
+                            app.setZoom(0.56);
+                        } else {
+                            app.setZoom(1);
                         }
                     }}
                 />
