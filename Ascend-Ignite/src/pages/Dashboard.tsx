@@ -1,25 +1,214 @@
+import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Trophy, ArrowRight, PlayCircle, Calendar, Sparkles, Zap } from 'lucide-react';
-import { getProfile } from '../services/profileService';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../components/Card';
+import { ArrowRight, Calendar, PlayCircle, Sparkles, Trophy, Zap } from 'lucide-react';
 import { Button } from '../components/Button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/Card';
 import { ProgressBar } from '../components/ProgressBar';
-import { moduleTemplates, mockEvents } from '../data/mockData';
+import { mockEvents, moduleTemplates } from '../data/mockData';
+import { getProfile } from '../services/profileService';
 import { getCompletedModuleIds, getQuizzesPassed } from '../services/progressService';
 
-export const Dashboard = () => {
-    const profile = getProfile();
-    const completedIds = getCompletedModuleIds();
-    const recommendedModule = moduleTemplates.find(m => !completedIds.includes(m.id)) || moduleTemplates[0];
-    const upcomingEvents = mockEvents.slice(0, 2);
-    const totalModules = moduleTemplates.length;
-    const completedModules = completedIds.length;
-    const quizzesPassed = getQuizzesPassed();
-    const overallProgress = Math.round((completedModules / totalModules) * 100);
-    const firstName = profile?.name?.trim().split(/\s+/)[0] || 'Explorer';
+const COURSE_CARD_COLOR = 'bg-primary';
 
-    if (!profile) return null;
+/**
+ * Returns the first name used in the dashboard greeting.
+ */
+function getFirstName(fullName?: string): string {
+    return fullName?.trim().split(/\s+/)[0] || 'Explorer';
+}
+
+/**
+ * Collects the derived dashboard values used across the page.
+ */
+function getDashboardData() {
+    const profile = getProfile();
+    const completedModuleIds = getCompletedModuleIds();
+    const recommendedModule = moduleTemplates.find((module) => !completedModuleIds.includes(module.id)) || moduleTemplates[0];
+    const quizzesPassed = getQuizzesPassed();
+    const totalModules = moduleTemplates.length;
+    const completedModules = completedModuleIds.length;
+
+    return {
+        profile,
+        quizzesPassed,
+        totalModules,
+        completedModules,
+        recommendedModule,
+        firstName: getFirstName(profile?.name),
+        overallProgress: Math.round((completedModules / totalModules) * 100),
+        upcomingEvents: mockEvents.slice(0, 2),
+    };
+}
+
+/**
+ * Renders a small metadata badge for the profile summary section.
+ */
+function Tag({ children }: { children: ReactNode }) {
+    return (
+        <span className="rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
+            {children}
+        </span>
+    );
+}
+
+/**
+ * Renders the dashboard hero stat pills.
+ */
+function StatPill({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+    return (
+        <div className={`rounded-[22px] border px-5 py-4 shadow-[0_18px_36px_rgba(15,23,42,0.05)] ${accent ? 'border-blue-200/60 bg-blue-50' : 'border-white/70 bg-white/75'}`}>
+            <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">{label}</p>
+            <p className={`mt-2 text-xl font-bold ${accent ? 'text-primary' : 'text-slate-900'}`}>{value}</p>
+        </div>
+    );
+}
+
+/**
+ * Renders a compact numeric summary block.
+ */
+function InfoBlock({ value, label }: { value: string; label: string }) {
+    return (
+        <div className="rounded-[18px] bg-slate-50 px-4 py-3">
+            <p className="text-lg font-bold text-slate-900">{value}</p>
+            <p className="mt-1 text-xs uppercase tracking-[0.18em] text-slate-500">{label}</p>
+        </div>
+    );
+}
+
+/**
+ * Renders the recommended next course card.
+ */
+function RecommendedModuleCard({
+    moduleTitle,
+    moduleDescription,
+    moduleId,
+    lessonCount,
+}: {
+    moduleTitle: string;
+    moduleDescription: string;
+    moduleId: string;
+    lessonCount: number;
+}) {
+    return (
+        <Card className="group overflow-hidden neon-border">
+            <div className="grid gap-0 md:grid-cols-[220px_minmax(0,1fr)]">
+                <div className="relative flex min-h-[200px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(37,99,235,0.88),rgba(30,64,175,0.96))] p-6 text-white">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_50%)]" />
+                    <div className="relative z-10 text-center">
+                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                            <PlayCircle className="h-8 w-8" />
+                        </div>
+                        <p className="text-xs uppercase tracking-[0.28em] text-white/80">Recommended next</p>
+                    </div>
+                </div>
+                <div className="flex flex-col justify-between p-6 md:p-7">
+                    <div>
+                        <div className="mb-3 text-xs font-bold uppercase tracking-[0.28em] text-primary">Priority focus</div>
+                        <h3 className="text-2xl font-bold text-slate-900">{moduleTitle}</h3>
+                        <p className="mt-2 text-base leading-7 text-slate-600">{moduleDescription}</p>
+                    </div>
+                    <div className="mt-5 flex flex-wrap gap-3">
+                        <Link to={`/module/${moduleId}`}>
+                            <Button>Start Module</Button>
+                        </Link>
+                        <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                            {lessonCount} lessons
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </Card>
+    );
+}
+
+/**
+ * Renders a single course card in the learning path section.
+ */
+function LearningPathCard({
+    module,
+    index,
+}: {
+    module: (typeof moduleTemplates)[number];
+    index: number;
+}) {
+    return (
+        <motion.div whileHover={{ y: -4, scale: 1.01 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
+            <Card className="group overflow-hidden neon-border hover:shadow-[0_20px_60px_rgba(37,99,235,0.12)]">
+                <div className="grid gap-0 md:grid-cols-[200px_minmax(0,1fr)]">
+                    <div className="relative min-h-[180px] overflow-hidden">
+                        {module.thumbnail ? (
+                            <>
+                                <img
+                                    src={module.thumbnail}
+                                    alt={module.title}
+                                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            </>
+                        ) : (
+                            <div className={`h-full w-full ${COURSE_CARD_COLOR}`} />
+                        )}
+                        <div className="absolute left-3 top-3 z-10">
+                            <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${COURSE_CARD_COLOR} text-sm font-bold text-white shadow-lg`}>
+                                {index + 1}
+                            </span>
+                        </div>
+                        {module.thumbnail && (
+                            <div className="absolute bottom-3 left-3 z-10">
+                                <span className="flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
+                                    <PlayCircle className="h-3.5 w-3.5" /> Video
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex flex-col justify-between p-6 md:p-7">
+                        <div>
+                            <div className="mb-2 flex items-center gap-2">
+                                <span className={`rounded-full ${COURSE_CARD_COLOR} px-3 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white`}>
+                                    Course {index + 1}
+                                </span>
+                                <span className="text-xs text-slate-400">{module.infographics.length} lessons</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 transition-colors group-hover:text-primary">
+                                {module.title}
+                            </h3>
+                            <p className="mt-1 text-sm font-semibold text-primary/80">{module.topic}</p>
+                            <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">{module.description}</p>
+                        </div>
+                        <div className="mt-4">
+                            <Link to={`/module/${module.id}`} className="w-full">
+                                <Button variant={index === 0 ? 'primary' : 'outline'} className="w-full justify-between text-sm">
+                                    {index === 0 ? 'Continue Course' : 'Start Course'}
+                                    <ArrowRight className="h-4 w-4" />
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </Card>
+        </motion.div>
+    );
+}
+
+/**
+ * Displays the learner dashboard overview.
+ */
+export const Dashboard = () => {
+    const {
+        profile,
+        quizzesPassed,
+        totalModules,
+        completedModules,
+        recommendedModule,
+        firstName,
+        overallProgress,
+        upcomingEvents,
+    } = getDashboardData();
+
+    if (!profile) {
+        return null;
+    }
 
     return (
         <div className="container mx-auto max-w-7xl px-4 py-8">
@@ -55,34 +244,12 @@ export const Dashboard = () => {
                             <Sparkles className="h-5 w-5 text-primary" />
                             Continue Your Path
                         </h2>
-                        <Card className="overflow-hidden neon-border group">
-                            <div className="grid gap-0 md:grid-cols-[220px_minmax(0,1fr)]">
-                                <div className="relative flex min-h-[200px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(37,99,235,0.88),rgba(30,64,175,0.96))] p-6 text-white">
-                                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_50%)]" />
-                                    <div className="relative z-10 text-center">
-                                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur shadow-[0_0_30px_rgba(255,255,255,0.2)]">
-                                            <PlayCircle className="h-8 w-8" />
-                                        </div>
-                                        <p className="text-xs uppercase tracking-[0.28em] text-white/80">Recommended next</p>
-                                    </div>
-                                </div>
-                                <div className="flex flex-col justify-between p-6 md:p-7">
-                                    <div>
-                                        <div className="mb-3 text-xs font-bold uppercase tracking-[0.28em] text-primary">Priority focus</div>
-                                        <h3 className="text-2xl font-bold text-slate-900">{recommendedModule.title}</h3>
-                                        <p className="mt-2 text-base leading-7 text-slate-600">{recommendedModule.description}</p>
-                                    </div>
-                                    <div className="mt-5 flex flex-wrap gap-3">
-                                        <Link to={`/module/${recommendedModule.id}`}>
-                                            <Button>Start Module</Button>
-                                        </Link>
-                                        <span className="inline-flex items-center rounded-full bg-slate-100 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-                                            {recommendedModule.infographics.length} lessons
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </Card>
+                        <RecommendedModuleCard
+                            moduleId={recommendedModule.id}
+                            moduleTitle={recommendedModule.title}
+                            moduleDescription={recommendedModule.description}
+                            lessonCount={recommendedModule.infographics.length}
+                        />
                     </motion.div>
 
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
@@ -113,79 +280,9 @@ export const Dashboard = () => {
                             </div>
                         </div>
                         <div className="grid gap-6 md:grid-cols-1">
-                            {moduleTemplates.map((module, index) => {
-                                const cardColor = 'bg-primary';
-                                return (
-                                    <motion.div
-                                        key={module.id}
-                                        whileHover={{ y: -4, scale: 1.01 }}
-                                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                                    >
-                                        <Card className="group overflow-hidden neon-border hover:shadow-[0_20px_60px_rgba(37,99,235,0.12)]">
-                                            <div className="grid gap-0 md:grid-cols-[200px_minmax(0,1fr)]">
-                                                <div className="relative min-h-[180px] overflow-hidden">
-                                                    {module.thumbnail ? (
-                                                        <>
-                                                            <img
-                                                                src={module.thumbnail}
-                                                                alt={module.title}
-                                                                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                            />
-                                                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                                                        </>
-                                                    ) : (
-                                                        <div className={`h-full w-full ${cardColor}`} />
-                                                    )}
-                                                    <div className="absolute top-3 left-3 z-10">
-                                                        <span className={`inline-flex h-10 w-10 items-center justify-center rounded-xl ${cardColor} text-sm font-bold text-white shadow-lg`}>
-                                                            {index + 1}
-                                                        </span>
-                                                    </div>
-                                                    {module.thumbnail && (
-                                                        <div className="absolute bottom-3 left-3 z-10">
-                                                            <span className="flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-xs font-medium text-white backdrop-blur">
-                                                                <PlayCircle className="h-3.5 w-3.5" /> Video
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex flex-col justify-between p-6 md:p-7">
-                                                    <div>
-                                                        <div className="mb-2 flex items-center gap-2">
-                                                            <span className={`rounded-full ${cardColor} px-3 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white`}>
-                                                                Course {index + 1}
-                                                            </span>
-                                                            <span className="text-xs text-slate-400">
-                                                                {module.infographics.length} lessons
-                                                            </span>
-                                                        </div>
-                                                        <h3 className="text-xl font-bold text-slate-900 transition-colors group-hover:text-primary">
-                                                            {module.title}
-                                                        </h3>
-                                                        <p className="mt-1 text-sm font-semibold text-primary/80">
-                                                            {module.topic}
-                                                        </p>
-                                                        <p className="mt-3 text-sm leading-6 text-slate-600 line-clamp-2">
-                                                            {module.description}
-                                                        </p>
-                                                    </div>
-                                                    <div className="mt-4">
-                                                        <Link to={`/module/${module.id}`} className="w-full">
-                                                            <Button
-                                                                variant={index === 0 ? 'primary' : 'outline'}
-                                                                className="w-full justify-between text-sm"
-                                                            >
-                                                                {index === 0 ? 'Continue Course' : 'Start Course'}
-                                                                <ArrowRight className="h-4 w-4" />
-                                                            </Button>
-                                                        </Link>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Card>
-                                    </motion.div>
-                                );
-                            })}
+                            {moduleTemplates.map((module, index) => (
+                                <LearningPathCard key={module.id} module={module} index={index} />
+                            ))}
                         </div>
                     </motion.div>
                 </div>
@@ -216,7 +313,7 @@ export const Dashboard = () => {
                                 <CardDescription>Upcoming opportunities to connect</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {upcomingEvents.map(event => (
+                                {upcomingEvents.map((event) => (
                                     <div key={event.id} className="flex items-start gap-4 rounded-[22px] border border-white/70 bg-white/65 p-4 shadow-[0_16px_36px_rgba(15,23,42,0.04)]">
                                         <div className="mt-1 rounded-xl bg-primary/10 p-3 text-primary">
                                             <Calendar className="h-4 w-4" />
@@ -245,23 +342,3 @@ export const Dashboard = () => {
         </div>
     );
 };
-
-const Tag = ({ children }: { children: React.ReactNode }) => (
-    <span className="rounded-full border border-blue-100 bg-blue-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-        {children}
-    </span>
-);
-
-const StatPill = ({ label, value, accent }: { label: string, value: string, accent?: boolean }) => (
-    <div className={`rounded-[22px] border px-5 py-4 shadow-[0_18px_36px_rgba(15,23,42,0.05)] ${accent ? 'border-blue-200/60 bg-blue-50' : 'border-white/70 bg-white/75'}`}>
-        <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">{label}</p>
-        <p className={`mt-2 text-xl font-bold ${accent ? 'text-primary' : 'text-slate-900'}`}>{value}</p>
-    </div>
-);
-
-const InfoBlock = ({ value, label }: { value: string, label: string }) => (
-    <div className="rounded-[22px] border border-white/70 bg-white/65 p-4">
-        <p className="text-2xl font-bold text-slate-900">{value}</p>
-        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{label}</p>
-    </div>
-);

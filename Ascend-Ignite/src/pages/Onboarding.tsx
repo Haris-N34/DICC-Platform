@@ -1,35 +1,36 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Info, Check } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, Info } from 'lucide-react';
 import { Button } from '../components/Button';
-import { ProgressBar } from '../components/ProgressBar';
 import { Card, CardContent } from '../components/Card';
-import { updateProfile } from '../services/profileService';
-import { generateProfileSummary } from '../services/aiService';
-import { UserProfile } from '../types';
+import { ProgressBar } from '../components/ProgressBar';
 import { moduleTemplates } from '../data/mockData';
 import { appVisuals } from '../data/visuals';
+import { generateProfileSummary } from '../services/aiService';
+import { updateProfile } from '../services/profileService';
+import { UserProfile } from '../types';
 
 type QuestionType = 'select' | 'radio';
+type QuestionOption = string | { label: string; value: string };
 
 interface Question {
     id: string;
     title: string;
     tooltip: string;
     type: QuestionType;
-    options: string[] | { label: string; value: string }[];
+    options: QuestionOption[];
     field: keyof UserProfile;
 }
 
-const questions: Question[] = [
+const QUESTIONS: Question[] = [
     {
         id: 'q1',
         title: 'What is your current academic focus?',
         tooltip: 'This helps us tailor industry-specific scenarios for you.',
         type: 'select',
         field: 'major',
-        options: ['Computer Science', 'Business', 'Liberal Arts', 'Engineering', 'Other']
+        options: ['Computer Science', 'Business', 'Liberal Arts', 'Engineering', 'Other'],
     },
     {
         id: 'q2',
@@ -37,7 +38,7 @@ const questions: Question[] = [
         tooltip: 'We use this to establish your baseline and adjust module difficulty.',
         type: 'radio',
         field: 'aiUsageLevel',
-        options: ['Rarely', 'Occasionally', 'Frequently', 'Heavily dependent']
+        options: ['Rarely', 'Occasionally', 'Frequently', 'Heavily dependent'],
     },
     {
         id: 'q3',
@@ -50,8 +51,8 @@ const questions: Question[] = [
             'Jobs disappearing',
             'Not having enough technical skills',
             'Too many choices / Lack of direction',
-            'Other'
-        ]
+            'Other',
+        ],
     },
     {
         id: 'q4',
@@ -59,7 +60,7 @@ const questions: Question[] = [
         tooltip: 'This determines how we present information in your modules.',
         type: 'radio',
         field: 'learningStyle',
-        options: ['Hands-on practice', 'Visual diagrams', 'Step-by-step guides', 'Quick summaries']
+        options: ['Hands-on practice', 'Visual diagrams', 'Step-by-step guides', 'Quick summaries'],
     },
     {
         id: 'q5',
@@ -71,11 +72,40 @@ const questions: Question[] = [
             { label: 'Look for the quickest way to complete it (Task)', value: 'Task-Oriented' },
             { label: 'Understand why we are doing it before starting (Purpose)', value: 'Purpose-Oriented' },
             { label: 'Ask a tool/AI to break it down for me (Task/Tool)', value: 'Tool-Oriented' },
-            { label: 'Brainstorm creative, unconventional solutions (Purpose)', value: 'Creative/Purpose' }
-        ]
-    }
+            { label: 'Brainstorm creative, unconventional solutions (Purpose)', value: 'Creative/Purpose' },
+        ],
+    },
 ];
 
+const ONBOARDING_HIGHLIGHTS = ['5 questions', 'Adaptive profile', 'Personalized path'];
+
+/**
+ * Normalizes a mixed string/object option into a consistent label and value pair.
+ */
+function getOptionDetails(option: QuestionOption) {
+    if (typeof option === 'string') {
+        return { label: option, value: option };
+    }
+
+    return option;
+}
+
+/**
+ * Advances the stored onboarding profile and generates the same summary content as before.
+ */
+async function completeOnboardingProfile(answers: Partial<UserProfile>, navigate: ReturnType<typeof useNavigate>) {
+    const fullProfile = updateProfile({
+        ...answers,
+        recommendedModule: moduleTemplates[0]?.id ?? '',
+    });
+    const summary = await generateProfileSummary(fullProfile);
+    updateProfile({ profileSummary: summary });
+    void navigate('/dashboard');
+}
+
+/**
+ * Displays the onboarding questionnaire and generates the learner profile.
+ */
 export const Onboarding = () => {
     const navigate = useNavigate();
     const [currentStep, setCurrentStep] = useState(0);
@@ -83,39 +113,44 @@ export const Onboarding = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
 
-    const currentQuestion = questions[currentStep];
-    const progress = ((currentStep) / questions.length) * 100;
+    const currentQuestion = QUESTIONS[currentStep];
+    const progress = (currentStep / QUESTIONS.length) * 100;
 
-    const handleSelect = (value: string) => {
-        setAnswers(prev => ({ ...prev, [currentQuestion.field]: value }));
+    /**
+     * Stores the answer for the currently displayed question.
+     */
+    const handleAnswerSelect = (value: string) => {
+        setAnswers((previousAnswers) => ({ ...previousAnswers, [currentQuestion.field]: value }));
     };
 
-    const handleNext = async () => {
-        if (currentStep < questions.length - 1) {
-            setCurrentStep(prev => prev + 1);
-            setShowTooltip(false);
-        } else {
-            // Finalize and generate profile summary
-            setIsGenerating(true);
-            try {
-                const fullProfile = updateProfile({
-                    ...answers,
-                    recommendedModule: moduleTemplates[0]?.id ?? '',
-                });
-                const summary = await generateProfileSummary(fullProfile);
-                updateProfile({ profileSummary: summary });
-                void navigate('/dashboard');
-            } catch (error) {
-                console.error("Failed to generate profile", error);
-                void navigate('/dashboard'); // Still navigate on error
-            }
-        }
-    };
-
+    /**
+     * Moves to the previous question and hides any visible tooltip.
+     */
     const handleBack = () => {
-        if (currentStep > 0) {
-            setCurrentStep(prev => prev - 1);
+        if (currentStep === 0) {
+            return;
+        }
+
+        setCurrentStep((previousStep) => previousStep - 1);
+        setShowTooltip(false);
+    };
+
+    /**
+     * Moves forward through the questionnaire and finalizes onboarding on the last step.
+     */
+    const handleNext = async () => {
+        if (currentStep < QUESTIONS.length - 1) {
+            setCurrentStep((previousStep) => previousStep + 1);
             setShowTooltip(false);
+            return;
+        }
+
+        setIsGenerating(true);
+
+        try {
+            await completeOnboardingProfile(answers, navigate);
+        } catch {
+            void navigate('/dashboard');
         }
     };
 
@@ -124,7 +159,7 @@ export const Onboarding = () => {
             <div className="min-h-[80vh] flex flex-col items-center justify-center p-4">
                 <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
+                    transition={{ repeat: Infinity, duration: 2, ease: 'linear' }}
                     className="mb-8"
                 >
                     <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full" />
@@ -150,124 +185,135 @@ export const Onboarding = () => {
                         <p className="mt-3 max-w-md text-sm leading-6 text-white/85">{appVisuals.onboarding.description}</p>
                     </div>
                 </div>
+
                 <div className="grid gap-4 sm:grid-cols-3 md:grid-cols-1">
-                    {['5 questions', 'Adaptive profile', 'Personalized path'].map((item) => (
-                        <div key={item} className="app-photo-chip rounded-[22px] p-4">
-                            <p className="text-sm font-semibold text-slate-900">{item}</p>
+                    {ONBOARDING_HIGHLIGHTS.map((highlight) => (
+                        <div key={highlight} className="app-photo-chip rounded-[22px] p-4">
+                            <p className="text-sm font-semibold text-slate-900">{highlight}</p>
                         </div>
                     ))}
                 </div>
             </div>
+
             <div className="flex flex-col">
-            <div className="mb-8">
-                <div className="flex justify-between items-center mb-4 text-sm font-medium text-slate-500">
-                    <span>Step {currentStep + 1} of {questions.length}</span>
-                    <button onClick={handleBack} disabled={currentStep === 0} className="hover:text-slate-900 disabled:opacity-0 disabled:pointer-events-none transition-opacity">
-                        Back
-                    </button>
+                <div className="mb-8">
+                    <div className="mb-4 flex items-center justify-between text-sm font-medium text-slate-500">
+                        <span>Step {currentStep + 1} of {QUESTIONS.length}</span>
+                        <button
+                            onClick={handleBack}
+                            disabled={currentStep === 0}
+                            className="transition-opacity hover:text-slate-900 disabled:pointer-events-none disabled:opacity-0"
+                        >
+                            Back
+                        </button>
+                    </div>
+                    <ProgressBar progress={progress} />
                 </div>
-                <ProgressBar progress={progress} />
-            </div>
 
-            <AnimatePresence mode="wait">
-                <motion.div
-                    key={currentStep}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex-1 flex flex-col"
-                >
-                    <Card className="flex-1 shadow-md border-0 ring-1 ring-slate-200">
-                        <CardContent className="pt-8 md:pt-12 flex flex-col h-full">
-                            <div className="flex items-start gap-3 mb-8">
-                                <h2 className="text-2xl md:text-3xl font-heading font-bold text-slate-900">
-                                    {currentQuestion.title}
-                                </h2>
-                                <div className="relative mt-1">
-                                    <button
-                                        onMouseEnter={() => setShowTooltip(true)}
-                                        onMouseLeave={() => setShowTooltip(false)}
-                                        onClick={() => setShowTooltip(!showTooltip)}
-                                        className="text-slate-400 hover:text-primary transition-colors"
-                                    >
-                                        <Info className="w-5 h-5" />
-                                    </button>
-                                    <AnimatePresence>
-                                        {showTooltip && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: 10 }}
-                                                className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 p-3 bg-slate-900 text-white text-sm rounded-lg shadow-xl z-20 pointer-events-none"
-                                            >
-                                                {currentQuestion.tooltip}
-                                                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentStep}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="flex-1 flex flex-col"
+                    >
+                        <Card className="flex-1 border-0 shadow-md ring-1 ring-slate-200">
+                            <CardContent className="flex h-full flex-col pt-8 md:pt-12">
+                                <div className="mb-8 flex items-start gap-3">
+                                    <h2 className="text-2xl md:text-3xl font-heading font-bold text-slate-900">
+                                        {currentQuestion.title}
+                                    </h2>
+                                    <div className="relative mt-1">
+                                        <button
+                                            onMouseEnter={() => setShowTooltip(true)}
+                                            onMouseLeave={() => setShowTooltip(false)}
+                                            onClick={() => setShowTooltip((isVisible) => !isVisible)}
+                                            className="text-slate-400 transition-colors hover:text-primary"
+                                        >
+                                            <Info className="w-5 h-5" />
+                                        </button>
+                                        <AnimatePresence>
+                                            {showTooltip && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: 10 }}
+                                                    className="absolute left-1/2 bottom-full z-20 mb-2 w-64 -translate-x-1/2 rounded-lg bg-slate-900 p-3 text-sm text-white shadow-xl pointer-events-none"
+                                                >
+                                                    {currentQuestion.tooltip}
+                                                    <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-slate-900" />
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div className="flex-1 flex flex-col gap-3 justify-center">
-                                {currentQuestion.type === 'select' ? (
-                                    <select
-                                        className="w-full p-4 text-lg rounded-xl border-2 border-slate-200 bg-slate-50 focus:border-primary focus:ring-0 transition-colors cursor-pointer appearance-none"
-                                        value={(answers[currentQuestion.field] as string) || ''}
-                                        onChange={(e) => handleSelect(e.target.value)}
-                                    >
-                                        <option value="" disabled>Select an option...</option>
-                                        {currentQuestion.options.map((opt: any) => (
-                                            <option key={opt.value || opt} value={opt.value || opt}>
-                                                {opt.label || opt}
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : (
-                                    currentQuestion.options.map((opt: any) => {
-                                        const value = opt.value || opt;
-                                        const label = opt.label || opt;
-                                        const isSelected = answers[currentQuestion.field] === value;
+                                <div className="flex flex-1 flex-col justify-center gap-3">
+                                    {currentQuestion.type === 'select' ? (
+                                        <select
+                                            className="w-full cursor-pointer appearance-none rounded-xl border-2 border-slate-200 bg-slate-50 p-4 text-lg transition-colors focus:border-primary focus:ring-0"
+                                            value={(answers[currentQuestion.field] as string) || ''}
+                                            onChange={(event) => handleAnswerSelect(event.target.value)}
+                                        >
+                                            <option value="" disabled>Select an option...</option>
+                                            {currentQuestion.options.map((option) => {
+                                                const { label, value } = getOptionDetails(option);
 
-                                        return (
-                                            <button
-                                                key={value}
-                                                onClick={() => handleSelect(value)}
-                                                className={`
+                                                return (
+                                                    <option key={value} value={value}>
+                                                        {label}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    ) : (
+                                        currentQuestion.options.map((option) => {
+                                            const { label, value } = getOptionDetails(option);
+                                            const isSelected = answers[currentQuestion.field] === value;
+
+                                            return (
+                                                <button
+                                                    key={value}
+                                                    onClick={() => handleAnswerSelect(value)}
+                                                    className={`
                             flex items-center justify-between w-full p-4 rounded-xl border-2 text-left transition-all duration-200
                             ${isSelected
-                                                        ? 'border-primary bg-primary/5 text-primary shadow-sm'
-                                                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
-                                                    }
+                                    ? 'border-primary bg-primary/5 text-primary shadow-sm'
+                                    : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                                }
                           `}
-                                            >
-                                                <span className="text-lg font-medium">{label}</span>
-                                                <div className={`
+                                                >
+                                                    <span className="text-lg font-medium">{label}</span>
+                                                    <div
+                                                        className={`
                              w-6 h-6 rounded-full flex items-center justify-center transition-colors
                              ${isSelected ? 'bg-primary text-white' : 'border-2 border-slate-300'}
-                          `}>
-                                                    {isSelected && <Check className="w-4 h-4" />}
-                                                </div>
-                                            </button>
-                                        );
-                                    })
-                                )}
-                            </div>
+                          `}
+                                                    >
+                                                        {isSelected && <Check className="w-4 h-4" />}
+                                                    </div>
+                                                </button>
+                                            );
+                                        })
+                                    )}
+                                </div>
 
-                            <div className="mt-8 flex justify-end">
-                                <Button
-                                    size="lg"
-                                    onClick={() => void handleNext()}
-                                    disabled={!answers[currentQuestion.field]}
-                                    className="w-full sm:w-auto px-8"
-                                >
-                                    {currentStep === questions.length - 1 ? 'Complete Profile' : 'Continue'}
-                                </Button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            </AnimatePresence>
+                                <div className="mt-8 flex justify-end">
+                                    <Button
+                                        size="lg"
+                                        onClick={() => void handleNext()}
+                                        disabled={!answers[currentQuestion.field]}
+                                        className="w-full px-8 sm:w-auto"
+                                    >
+                                        {currentStep === QUESTIONS.length - 1 ? 'Complete Profile' : 'Continue'}
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+                </AnimatePresence>
             </div>
         </div>
     );

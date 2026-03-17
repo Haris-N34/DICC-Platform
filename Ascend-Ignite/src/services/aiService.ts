@@ -2,34 +2,30 @@ import { UserProfile } from '../types';
 
 /**
  * Generates personalized learning module content based on the user's profile.
- * @param profile The current user's profile.
- * @param moduleId The ID of the module to generate content for.
  */
-export async function generateModuleContent(profile: UserProfile, moduleId: string): Promise<any> {
-    // TODO: connect to custom AI model later (e.g., Azure OpenAI)
-    console.log(`[AI Stub] Generating content for module ${moduleId} tailored to ${profile.major} student interested in ${profile.careerInterest}`);
+export async function generateModuleContent(_profile: UserProfile, _moduleId: string): Promise<null> {
     return null;
 }
 
 /**
  * Generates a personalized quiz based on the user's profile and module progress.
- * @param profile The current user's profile.
- * @param moduleId The ID of the module to generate the quiz for.
  */
-export async function generateQuiz(profile: UserProfile, moduleId: string): Promise<any> {
-    // TODO: connect to custom AI model later
-    console.log(`[AI Stub] Generating quiz for module ${moduleId} tailored to ${profile.learningStyle} learning style`);
+export async function generateQuiz(_profile: UserProfile, _moduleId: string): Promise<null> {
     return null;
 }
 
 /**
+ * Delays execution to preserve the existing simulated AI latency.
+ */
+function delay(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+/**
  * Generates a personalized profile summary based on the onboarding answers.
- * @param profile Data collected during onboarding.
  */
 export async function generateProfileSummary(profile: Partial<UserProfile>): Promise<string> {
-    // TODO: connect to custom AI model later
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await delay(1500);
 
     const academicFocus = profile.major || 'your field';
     const careerPath = profile.careerInterest || 'your career path';
