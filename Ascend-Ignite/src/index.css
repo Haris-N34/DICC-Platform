@@ -150,16 +150,23 @@
     width: 100%;
     min-height: 100vh;
     min-width: 100%;
-    transform: scale(1.1) translate(-3%, 6%);
-    transform-origin: center center;
-    filter: saturate(0.82) brightness(1.03) contrast(0.98);
     background:
       radial-gradient(circle at 50% 24%, rgba(224, 242, 254, 0.56), transparent 22%),
       linear-gradient(180deg, #b8e3fb 0%, #87cefa 58%, #87cefa 100%);
   }
 
-  .hero-spline-stage > div,
-  .hero-spline-stage canvas {
+  .hero-spline-scene {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    min-height: 100vh;
+    transform: scale(1.1) translate(-3%, 6%);
+    transform-origin: center center;
+    filter: saturate(0.82) brightness(1.03) contrast(0.98);
+  }
+
+  .hero-spline-scene > div,
+  .hero-spline-scene canvas {
     height: 100% !important;
     width: 100% !important;
     background: #87cefa !important;
@@ -186,7 +193,7 @@
   }
 
   @media (max-width: 1024px) {
-    .hero-spline-stage {
+    .hero-spline-scene {
       min-height: 100vh;
       transform: scale(1.08) translate(-2.5%, 5%);
     }
@@ -201,7 +208,7 @@
   }
 
   @media (max-width: 768px) {
-    .hero-spline-stage {
+    .hero-spline-scene {
       min-height: 100vh;
       transform: scale(1.04) translate(-2%, 4%);
     }
@@ -223,7 +230,11 @@
   @media (max-width: 480px) {
     .hero-spline-stage {
       min-height: 100svh;
-      transform: scale(0.58) translate(0, -5%);
+    }
+
+    .hero-spline-scene {
+      min-height: 100svh;
+      transform: scale(0.74) translate(0, 0);
     }
 
     .hero-side-line {
