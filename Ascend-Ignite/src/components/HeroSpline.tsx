@@ -2,13 +2,25 @@ import Spline from '@splinetool/react-spline';
 import type { Application } from '@splinetool/runtime';
 import { useEffect, useRef, useState } from 'react';
 
+const isPhoneViewport = () => window.innerWidth <= 480;
+
+const getPhoneZoom = () => {
+    const aspectRatio = window.innerWidth / Math.max(window.innerHeight, 1);
+    return Math.min(2.35, Math.max(2.05, 1 / Math.max(aspectRatio, 0.42)));
+};
+
 export const HeroSpline = () => {
     const splineRef = useRef<Application | null>(null);
-    const [isPhone, setIsPhone] = useState(() => window.innerWidth <= 480);
+    const [isPhone, setIsPhone] = useState(() => isPhoneViewport());
 
     useEffect(() => {
         const handleResize = () => {
-            setIsPhone(window.innerWidth <= 480);
+            const nextIsPhone = isPhoneViewport();
+            setIsPhone(nextIsPhone);
+
+            if (nextIsPhone && splineRef.current) {
+                splineRef.current.setZoom(getPhoneZoom());
+            }
         };
 
         window.addEventListener('resize', handleResize);
@@ -21,7 +33,7 @@ export const HeroSpline = () => {
     const handleLoad = (spline: Application) => {
         splineRef.current = spline;
         if (isPhone) {
-            spline.setZoom(0.42);
+            spline.setZoom(getPhoneZoom());
         }
     };
 
