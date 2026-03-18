@@ -219,4 +219,24 @@
       right: 3%;
     }
   }
+
+  @media (max-width: 480px) {
+    .hero-spline-stage {
+      min-height: 100svh;
+      transform: scale(0.9) translate(0, 1%);
+    }
+
+    .hero-side-line {
+      top: 16%;
+      bottom: 14%;
+    }
+
+    .hero-side-line-left {
+      left: 2%;
+    }
+
+    .hero-side-line-right {
+      right: 2%;
+    }
+  }
 }
