@@ -234,7 +234,7 @@
 
     .hero-spline-scene {
       min-height: 100svh;
-      transform: scale(0.74) translate(0, 0);
+      transform: none;
     }
 
     .hero-side-line {
