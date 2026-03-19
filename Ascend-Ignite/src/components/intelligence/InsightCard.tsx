@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ExternalLink, ArrowRight, GraduationCap } from 'lucide-react';
+import { ArrowRight, GraduationCap } from 'lucide-react';
 import { Card } from '../Card';
 import { Button } from '../Button';
 import type { ToolArticle } from '../../types';
