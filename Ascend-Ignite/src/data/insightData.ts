@@ -2,6 +2,38 @@ import type { ToolArticle } from '../types';
 
 export const weekLabel = 'March 2025';
 
+export const analogyDictionary: Record<string, { emoji: string; analogy: string; explanation: string }> = {
+    'large language model': {
+        emoji: '🧠',
+        analogy: 'A super-fast reader who memorized the internet',
+        explanation: 'An LLM is trained on massive text data and predicts the most likely next words, giving the illusion of understanding.',
+    },
+    'neural network': {
+        emoji: '🕸️',
+        analogy: 'A web of tiny decision-makers',
+        explanation: 'Layers of simple math functions that, together, can recognize patterns too complex for any single rule.',
+    },
+    'prompt engineering': {
+        emoji: '🎯',
+        analogy: 'Giving precise directions to a very literal friend',
+        explanation: 'The art of phrasing your input so the AI produces the output you actually want.',
+    },
+    'hallucination': {
+        emoji: '🌀',
+        analogy: 'Confidently wrong, like a bluffing student',
+        explanation: 'When an AI generates plausible-sounding but factually incorrect information.',
+    },
+    'token': {
+        emoji: '🧩',
+        analogy: 'A puzzle piece of text',
+        explanation: 'The smallest unit of text an LLM processes — roughly ¾ of a word on average.',
+    },
+};
+
+export const traceFlowDefaults = {
+    stepDurationMs: 800,
+};
+
 export const toolArticles: ToolArticle[] = [
     {
         id: 'manus',

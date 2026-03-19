@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ExternalLink, GraduationCap, Copy, Check, Lightbulb, ArrowRight } from 'lucide-react';
+import { ExternalLink, GraduationCap, Copy, Check, Lightbulb } from 'lucide-react';
 import { Card, CardContent } from '../components/Card';
 import { getProfile } from '../services/profileService';
 import { getToolkitForMajor } from '../data/majorToolkits';
