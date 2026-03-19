@@ -30,7 +30,7 @@ const QUESTIONS: Question[] = [
         tooltip: 'This helps us tailor industry-specific scenarios for you.',
         type: 'select',
         field: 'major',
-        options: ['Computer Science', 'Business', 'Liberal Arts', 'Engineering', 'Other'],
+        options: ['Business', 'Computer Science', 'Engineering', 'Nursing / Health Sciences', 'Psychology', 'Communications / Media', 'Education', 'Biology / Pre-Med', 'Political Science / Pre-Law', 'Other'],
     },
     {
         id: 'q2',

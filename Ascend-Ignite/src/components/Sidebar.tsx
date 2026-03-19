@@ -6,6 +6,8 @@ import {
     ChevronLeft,
     ChevronRight,
     LayoutDashboard,
+    BookOpen,
+    GraduationCap,
     Users,
     Award,
     Flame,
@@ -44,6 +46,8 @@ export const Sidebar = ({ onCollapseChange }: SidebarProps) => {
 
     const navItems = [
         { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+        { to: '/intelligence', icon: BookOpen, label: 'Discover' },
+        { to: '/my-major', icon: GraduationCap, label: 'For You' },
         { to: '/community', icon: Users, label: 'Community' },
         { to: '/certificates', icon: Award, label: 'Certificates' },
     ];

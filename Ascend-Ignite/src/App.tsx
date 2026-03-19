@@ -16,6 +16,8 @@ import { Community } from './pages/Community';
 import { Networking } from './pages/Networking';
 import { Advising } from './pages/Advising';
 import { Certificates } from './pages/Certificates';
+import { IntelligencePage } from './pages/IntelligencePage';
+import { MyMajorPage } from './pages/MyMajorPage';
 import { ChatBot } from './components/ChatBot';
 
 // Component to protect routes requiring a profile
@@ -136,6 +138,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Certificates />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/intelligence"
+          element={
+            <ProtectedRoute>
+              <IntelligencePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-major"
+          element={
+            <ProtectedRoute>
+              <MyMajorPage />
             </ProtectedRoute>
           }
         />
