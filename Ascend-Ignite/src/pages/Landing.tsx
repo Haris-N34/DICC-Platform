@@ -1,4 +1,4 @@
-import { Suspense, lazy, useRef, useState } from 'react';
+import { Suspense, lazy, useMemo, useRef, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
@@ -20,6 +20,9 @@ const HeroSpline = lazy(() =>
     import('../components/HeroSpline').then((module) => ({ default: module.HeroSpline }))
 );
 
+const isMobileDevice = () =>
+    typeof window !== 'undefined' && window.innerWidth <= 768;
+
 const faqs = [
     { q: 'Who is Ascend Ignite for?', a: 'College students and early-career professionals who want to feel confident about their future in an AI-driven job market.' },
     { q: 'How long does it take?', a: 'Each course is about 15-20 minutes. You can finish the whole program in under an hour.' },
@@ -29,6 +32,7 @@ const faqs = [
 
 export const Landing = () => {
     const profile = getProfile();
+    const isMobile = useMemo(() => isMobileDevice(), []);
     const revealRef = useRef<HTMLElement | null>(null);
     const { scrollYProgress } = useScroll({
         target: revealRef,
@@ -46,103 +50,207 @@ export const Landing = () => {
         <div className="flex min-h-screen flex-col">
             <LandingNavbar />
 
-            {/* ── Hero ── */}
-            <section ref={revealRef} className="relative min-h-[148vh] overflow-hidden md:min-h-[152vh]">
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,#bfe9ff_0%,#87cefa_34%,#9fd7fb_54%,#dfeffd_72%,#ffffff_100%)]" />
-
-                <div className="relative z-10 flex min-h-[148vh] flex-col md:min-h-[152vh]">
-                    <motion.div
-                        initial={{ opacity: 0, y: 18 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.55 }}
-                        className="sticky top-0 flex min-h-screen flex-col overflow-hidden"
-                    >
-                        <div className="absolute inset-x-0 bottom-0 z-10 h-24 bg-[linear-gradient(180deg,rgba(135,206,250,0),rgba(135,206,250,0.78)_72%,rgba(135,206,250,0.97)_100%)]" />
-                        <motion.div
-                            style={{ opacity: introOverlayOpacity }}
-                            className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_50%,transparent_22%,rgba(15,23,42,0.24)_100%)]"
-                        />
-
-                        <div className="relative flex min-h-screen flex-col justify-end">
-                            <div className="pointer-events-none absolute inset-0">
-                                <Suspense
-                                    fallback={
-                                        <div className="flex h-full items-center justify-center px-8 text-center text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
-                                            Loading ascend ignite experience
-                                        </div>
-                                    }
-                                >
-                                    <HeroSpline />
-                                </Suspense>
-                            </div>
-                            <div className="relative z-10 flex justify-center pb-4 md:pb-5">
-                                <div className="h-11 w-[1px] bg-gradient-to-b from-transparent via-blue-300/80 to-transparent" />
-                            </div>
+            {isMobile ? (
+                <>
+                    {/* ── Mobile Hero ── */}
+                    <section className="relative overflow-hidden bg-[linear-gradient(180deg,#bfe9ff_0%,#87cefa_34%,#a8d8f8_60%,#dfeffd_82%,#ffffff_100%)] pt-24 pb-10">
+                        {/* Decorative radials */}
+                        <div className="pointer-events-none absolute inset-0">
+                            <div className="absolute -top-20 -left-20 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
+                            <div className="absolute top-1/3 -right-16 h-56 w-56 rounded-full bg-primary/10 blur-3xl" />
                         </div>
-                    </motion.div>
 
-                    {/* Hero card */}
-                    <motion.div
-                        style={{ y: contentY, opacity: contentOpacity }}
-                        className="relative z-20 -mt-6 px-4 pb-4 md:-mt-10 md:px-6 md:pb-5"
-                    >
-                        <div className="mx-auto max-w-4xl rounded-[32px] border border-white/40 bg-white/50 p-5 shadow-[0_24px_64px_rgba(15,23,42,0.08)] backdrop-blur-2xl backdrop-saturate-150 md:p-7">
-                            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Ascend Ignite</p>
-                            <h1 className="max-w-2xl text-3xl text-slate-950 md:text-5xl leading-[1.15]">
-                                <VerticalCutReveal
-                                    splitBy="words"
-                                    staggerDuration={0.08}
-                                    transition={{ type: 'spring', stiffness: 200, damping: 21 }}
-                                >
-                                    Career readiness for students through AI literacy, advising, and real-world momentum.
-                                </VerticalCutReveal>
-                            </h1>
-                            <p className="mt-3 max-w-lg text-base leading-7 text-slate-500">
-                                Build confidence through three guided modules focused on AI literacy, career readiness, and practical student outcomes.
-                            </p>
-                            <div className="mt-4 flex items-center gap-4">
+                        <div className="relative z-10 px-5">
+                            {/* Brand mark */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 16 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5 }}
+                                className="mb-6 flex items-center gap-3"
+                            >
+                                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-white shadow-[0_8px_24px_rgba(37,99,235,0.35)]">
+                                    <Flame className="h-5 w-5" />
+                                </div>
+                                <span className="font-heading text-xl font-bold text-slate-900">Ascend Ignite</span>
+                            </motion.div>
+
+                            {/* Headline */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.55, delay: 0.1 }}
+                            >
+                                <h1 className="max-w-sm text-[1.75rem] font-bold leading-[1.2] text-slate-950 font-heading">
+                                    Career readiness through AI literacy, advising, and real&#8209;world momentum.
+                                </h1>
+                                <p className="mt-3 max-w-sm text-[15px] leading-7 text-slate-600">
+                                    Build confidence through three guided modules focused on AI literacy, career readiness, and practical student outcomes.
+                                </p>
+                            </motion.div>
+
+                            {/* CTA */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 14 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.45, delay: 0.25 }}
+                                className="mt-6 flex items-center gap-4"
+                            >
                                 <Link to="/signup">
-                                    <Button size="lg" className="gap-2">
+                                    <Button size="lg" className="gap-2 text-base">
                                         Start for free <ArrowRight className="h-4 w-4" />
                                     </Button>
                                 </Link>
-                                <span className="text-xs text-slate-400">No credit card. No catch.</span>
-                            </div>
-                            <div className="mt-6 grid gap-3 md:grid-cols-[1.2fr_0.8fr] md:gap-4">
-                                <div className="app-photo-frame rounded-[26px]">
+                                <span className="text-xs text-slate-500">No credit card.</span>
+                            </motion.div>
+
+                            {/* Stat chips */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 14 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.45, delay: 0.35 }}
+                                className="mt-8 grid grid-cols-2 gap-3"
+                            >
+                                {[
+                                    { label: 'Fast path', value: '3 guided modules' },
+                                    { label: 'Practical support', value: 'Events + advising' },
+                                ].map((item) => (
+                                    <div key={item.label} className="rounded-2xl border border-white/50 bg-white/60 p-4 backdrop-blur-lg shadow-[0_8px_24px_rgba(15,23,42,0.06)]">
+                                        <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-primary">{item.label}</p>
+                                        <p className="mt-2 text-base font-bold text-slate-900">{item.value}</p>
+                                    </div>
+                                ))}
+                            </motion.div>
+
+                            {/* Hero image */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 18 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.45 }}
+                                className="mt-8"
+                            >
+                                <div className="app-photo-frame rounded-2xl">
                                     <img
                                         src={appVisuals.community.hero.src}
                                         alt={appVisuals.community.hero.alt}
-                                        className="h-56 w-full object-cover md:h-64"
+                                        className="h-48 w-full object-cover"
                                     />
-                                    <div className="absolute inset-x-0 bottom-0 z-10 p-5 text-white">
+                                    <div className="absolute inset-x-0 bottom-0 z-10 p-4 text-white">
                                         <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-blue-100">Career-ready community</p>
-                                        <p className="mt-2 max-w-md text-sm leading-6 text-white/90">
+                                        <p className="mt-1.5 text-sm leading-6 text-white/90">
                                             Learn with context, then apply it through community, advising, and visible progress.
                                         </p>
                                     </div>
                                 </div>
-                                <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-1">
-                                    {[
-                                        { label: 'Fast path', value: '3 guided modules' },
-                                        { label: 'Practical support', value: 'Events + advising' },
-                                    ].map((item) => (
-                                        <div key={item.label} className="app-photo-chip rounded-[24px] p-5">
-                                            <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-primary">{item.label}</p>
-                                            <p className="mt-3 text-lg font-bold text-slate-900">{item.value}</p>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
+                            </motion.div>
                         </div>
-                    </motion.div>
-                </div>
-            </section>
+                    </section>
 
-            <div className="relative h-20 overflow-hidden md:h-28">
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(244,248,255,0.75)_55%,#f8fbff_100%)]" />
-                <div className="absolute inset-x-0 top-1/2 mx-auto h-px w-[min(88%,920px)] -translate-y-1/2 bg-[linear-gradient(90deg,transparent,rgba(37,99,235,0.16),transparent)]" />
-            </div>
+                    <div className="relative h-10 overflow-hidden">
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(244,248,255,0.75)_55%,#f8fbff_100%)]" />
+                        <div className="absolute inset-x-0 top-1/2 mx-auto h-px w-[88%] -translate-y-1/2 bg-[linear-gradient(90deg,transparent,rgba(37,99,235,0.16),transparent)]" />
+                    </div>
+                </>
+            ) : (
+                <>
+                    {/* ── Desktop Hero ── */}
+                    <section ref={revealRef} className="relative min-h-[152vh] overflow-hidden">
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,#bfe9ff_0%,#87cefa_34%,#9fd7fb_54%,#dfeffd_72%,#ffffff_100%)]" />
+
+                        <div className="relative z-10 flex min-h-[152vh] flex-col">
+                            <motion.div
+                                initial={{ opacity: 0, y: 18 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.55 }}
+                                className="sticky top-0 flex min-h-screen flex-col overflow-hidden"
+                            >
+                                <div className="absolute inset-x-0 bottom-0 z-10 h-24 bg-[linear-gradient(180deg,rgba(135,206,250,0),rgba(135,206,250,0.78)_72%,rgba(135,206,250,0.97)_100%)]" />
+                                <motion.div
+                                    style={{ opacity: introOverlayOpacity }}
+                                    className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_50%_50%,transparent_22%,rgba(15,23,42,0.24)_100%)]"
+                                />
+
+                                <div className="relative flex min-h-screen flex-col justify-end">
+                                    <div className="pointer-events-none absolute inset-0">
+                                        <Suspense
+                                            fallback={
+                                                <div className="flex h-full items-center justify-center px-8 text-center text-sm font-medium uppercase tracking-[0.24em] text-slate-500">
+                                                    Loading ascend ignite experience
+                                                </div>
+                                            }
+                                        >
+                                            <HeroSpline />
+                                        </Suspense>
+                                    </div>
+                                    <div className="relative z-10 flex justify-center pb-5">
+                                        <div className="h-11 w-[1px] bg-gradient-to-b from-transparent via-blue-300/80 to-transparent" />
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Hero card */}
+                            <motion.div
+                                style={{ y: contentY, opacity: contentOpacity }}
+                                className="relative z-20 -mt-10 px-6 pb-5"
+                            >
+                                <div className="mx-auto max-w-4xl rounded-[32px] border border-white/40 bg-white/50 p-7 shadow-[0_24px_64px_rgba(15,23,42,0.08)] backdrop-blur-2xl backdrop-saturate-150">
+                                    <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.3em] text-primary">Ascend Ignite</p>
+                                    <h1 className="max-w-2xl text-5xl text-slate-950 leading-[1.15]">
+                                        <VerticalCutReveal
+                                            splitBy="words"
+                                            staggerDuration={0.08}
+                                            transition={{ type: 'spring', stiffness: 200, damping: 21 }}
+                                        >
+                                            Career readiness for students through AI literacy, advising, and real-world momentum.
+                                        </VerticalCutReveal>
+                                    </h1>
+                                    <p className="mt-3 max-w-lg text-base leading-7 text-slate-500">
+                                        Build confidence through three guided modules focused on AI literacy, career readiness, and practical student outcomes.
+                                    </p>
+                                    <div className="mt-4 flex items-center gap-4">
+                                        <Link to="/signup">
+                                            <Button size="lg" className="gap-2">
+                                                Start for free <ArrowRight className="h-4 w-4" />
+                                            </Button>
+                                        </Link>
+                                        <span className="text-xs text-slate-400">No credit card. No catch.</span>
+                                    </div>
+                                    <div className="mt-6 grid gap-4 md:grid-cols-[1.2fr_0.8fr]">
+                                        <div className="app-photo-frame rounded-[26px]">
+                                            <img
+                                                src={appVisuals.community.hero.src}
+                                                alt={appVisuals.community.hero.alt}
+                                                className="h-64 w-full object-cover"
+                                            />
+                                            <div className="absolute inset-x-0 bottom-0 z-10 p-5 text-white">
+                                                <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-blue-100">Career-ready community</p>
+                                                <p className="mt-2 max-w-md text-sm leading-6 text-white/90">
+                                                    Learn with context, then apply it through community, advising, and visible progress.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="grid gap-4 md:grid-cols-1">
+                                            {[
+                                                { label: 'Fast path', value: '3 guided modules' },
+                                                { label: 'Practical support', value: 'Events + advising' },
+                                            ].map((item) => (
+                                                <div key={item.label} className="app-photo-chip rounded-[24px] p-5">
+                                                    <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-primary">{item.label}</p>
+                                                    <p className="mt-3 text-lg font-bold text-slate-900">{item.value}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </section>
+
+                    <div className="relative h-28 overflow-hidden">
+                        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0)_0%,rgba(244,248,255,0.75)_55%,#f8fbff_100%)]" />
+                        <div className="absolute inset-x-0 top-1/2 mx-auto h-px w-[min(88%,920px)] -translate-y-1/2 bg-[linear-gradient(90deg,transparent,rgba(37,99,235,0.16),transparent)]" />
+                    </div>
+                </>
+            )}
 
             {/* ── What you get ── */}
             <section className="relative overflow-hidden pt-18 pb-14 md:pt-24 md:pb-18">
@@ -181,7 +289,7 @@ export const Landing = () => {
                         </motion.div>
 
                         <div className="space-y-5">
-                            <div className="grid gap-5 md:grid-cols-3">
+                            <div className="grid gap-4 sm:grid-cols-3 md:grid-cols-3">
                         {[
                             { icon: <Target className="h-5 w-5" />, title: 'Career pathways', desc: 'Structured modules that move you from "I don\'t know what I\'m doing" to interview-ready.' },
                             { icon: <Brain className="h-5 w-5" />, title: <>AI<br />fluency</>, desc: 'Learn what AI can and can\'t do, how to use it well, and why your human skills still matter.' },
@@ -198,8 +306,8 @@ export const Landing = () => {
                                 <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/8 text-primary">
                                     {item.icon}
                                 </div>
-                                <h3 className="min-h-[4rem] text-lg font-bold text-slate-900">{item.title}</h3>
-                                <p className="mt-2 min-h-[7.5rem] text-sm leading-6 text-slate-500">{item.desc}</p>
+                                <h3 className="text-lg font-bold text-slate-900 md:min-h-[4rem]">{item.title}</h3>
+                                <p className="mt-2 text-sm leading-6 text-slate-500 md:min-h-[7.5rem]">{item.desc}</p>
                             </motion.div>
                         ))}
                             </div>
@@ -309,9 +417,9 @@ export const Landing = () => {
             {/* ── Footer ── */}
             <footer className="border-t border-slate-200/60 bg-white">
                 <div className="container mx-auto max-w-6xl px-4 py-12 md:px-6">
-                    <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+                    <div className="grid grid-cols-2 gap-8 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:gap-10">
                         {/* Brand */}
-                        <div>
+                        <div className="col-span-2 md:col-span-1">
                             <div className="flex items-center gap-2.5 mb-4">
                                 <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white">
                                     <Flame className="h-4.5 w-4.5" />

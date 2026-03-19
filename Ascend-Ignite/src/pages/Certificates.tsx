@@ -18,7 +18,7 @@ const Certificate = ({ name, courseName, date, onDownload }: {
         <div className="relative">
             <div
                 id={`cert-${courseName}`}
-                className="relative mx-auto aspect-[1.414/1] w-full max-w-[700px] overflow-hidden rounded-2xl border-2 border-amber-200 bg-white p-8 md:p-12 shadow-[0_20px_60px_rgba(0,0,0,0.08)]"
+                className="relative mx-auto aspect-[1/1.2] w-full max-w-[700px] overflow-hidden rounded-2xl border-2 border-amber-200 bg-white p-5 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:aspect-[1.414/1] md:p-12"
             >
                 {/* Decorative border */}
                 <div className="absolute inset-3 rounded-xl border-2 border-amber-100/60" />
@@ -68,14 +68,14 @@ const Certificate = ({ name, courseName, date, onDownload }: {
 
                     {/* Bottom Section */}
                     <div className="w-full space-y-4">
-                        <div className="flex items-center justify-center gap-12">
+                        <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center sm:gap-12">
                             <div className="text-center">
-                                <div className="h-px w-32 bg-slate-300 mb-2" />
+                                <div className="h-px w-28 bg-slate-300 mb-2 sm:w-32" />
                                 <p className="text-xs text-slate-500">Date Completed</p>
                                 <p className="text-sm font-semibold text-slate-700">{date}</p>
                             </div>
                             <div className="text-center">
-                                <div className="h-px w-32 bg-slate-300 mb-2" />
+                                <div className="h-px w-28 bg-slate-300 mb-2 sm:w-32" />
                                 <p className="text-xs text-slate-500">Program Director</p>
                                 <p className="text-sm font-semibold text-slate-700">Ascend Ignite</p>
                             </div>
@@ -128,8 +128,8 @@ export const Certificates = () => {
                         Complete courses and quizzes to earn professional certificates that showcase your AI-readiness skills.
                     </p>
                 </motion.div>
-                <div className="app-photo-frame rounded-[30px]">
-                    <img src={appVisuals.certificates.src} alt={appVisuals.certificates.alt} className="h-[300px] w-full object-cover" />
+                <div className="app-photo-frame rounded-[22px] md:rounded-[30px]">
+                    <img src={appVisuals.certificates.src} alt={appVisuals.certificates.alt} className="h-[200px] w-full object-cover md:h-[300px]" />
                     <div className="absolute inset-x-0 bottom-0 z-10 p-6 text-white">
                         <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-blue-100">{appVisuals.certificates.eyebrow}</p>
                         <p className="mt-3 max-w-md text-sm leading-6 text-white/90">{appVisuals.certificates.description}</p>

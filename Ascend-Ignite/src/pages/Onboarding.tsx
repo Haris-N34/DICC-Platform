@@ -171,13 +171,13 @@ export const Onboarding = () => {
     }
 
     return (
-        <div className="mx-auto grid min-h-[80vh] max-w-6xl gap-8 px-4 py-12 md:grid-cols-[0.88fr_1.12fr] md:py-20">
-            <div className="space-y-5">
-                <div className="app-photo-frame rounded-[30px]">
+        <div className="mx-auto grid min-h-[80vh] max-w-6xl gap-6 px-4 py-8 md:grid-cols-[0.88fr_1.12fr] md:gap-8 md:py-20">
+            <div className="space-y-4 md:space-y-5">
+                <div className="app-photo-frame rounded-[22px] md:rounded-[30px]">
                     <img
                         src={appVisuals.onboarding.src}
                         alt={appVisuals.onboarding.alt}
-                        className="h-[320px] w-full object-cover md:h-[420px]"
+                        className="h-[200px] w-full object-cover md:h-[420px]"
                     />
                     <div className="absolute inset-x-0 bottom-0 z-10 p-6 text-white">
                         <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-blue-100">{appVisuals.onboarding.eyebrow}</p>

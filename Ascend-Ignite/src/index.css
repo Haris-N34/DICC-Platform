@@ -241,4 +241,16 @@
       display: none;
     }
   }
+
+  /* Bottom tab bar safe area for devices with home indicators */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Prevent horizontal overflow on mobile */
+  @media (max-width: 767px) {
+    html, body {
+      overflow-x: hidden;
+    }
+  }
 }

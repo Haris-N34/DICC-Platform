@@ -57,9 +57,9 @@ function Tag({ children }: { children: ReactNode }) {
  */
 function StatPill({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
     return (
-        <div className={`rounded-[22px] border px-5 py-4 shadow-[0_18px_36px_rgba(15,23,42,0.05)] ${accent ? 'border-blue-200/60 bg-blue-50' : 'border-white/70 bg-white/75'}`}>
-            <p className="text-[11px] uppercase tracking-[0.24em] text-slate-500">{label}</p>
-            <p className={`mt-2 text-xl font-bold ${accent ? 'text-primary' : 'text-slate-900'}`}>{value}</p>
+        <div className={`rounded-[18px] border px-4 py-3 shadow-[0_18px_36px_rgba(15,23,42,0.05)] md:rounded-[22px] md:px-5 md:py-4 ${accent ? 'border-blue-200/60 bg-blue-50' : 'border-white/70 bg-white/75'}`}>
+            <p className="text-[10px] uppercase tracking-[0.24em] text-slate-500 md:text-[11px]">{label}</p>
+            <p className={`mt-1 text-lg font-bold md:mt-2 md:text-xl ${accent ? 'text-primary' : 'text-slate-900'}`}>{value}</p>
         </div>
     );
 }
@@ -93,7 +93,7 @@ function RecommendedModuleCard({
     return (
         <Card className="group overflow-hidden neon-border">
             <div className="grid gap-0 md:grid-cols-[220px_minmax(0,1fr)]">
-                <div className="relative flex min-h-[200px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(37,99,235,0.88),rgba(30,64,175,0.96))] p-6 text-white">
+                <div className="relative flex min-h-[140px] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(37,99,235,0.88),rgba(30,64,175,0.96))] p-6 text-white md:min-h-[200px]">
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_50%)]" />
                     <div className="relative z-10 text-center">
                         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur shadow-[0_0_30px_rgba(255,255,255,0.2)]">
@@ -136,7 +136,7 @@ function LearningPathCard({
         <motion.div whileHover={{ y: -4, scale: 1.01 }} transition={{ type: 'spring', stiffness: 300, damping: 20 }}>
             <Card className="group overflow-hidden neon-border hover:shadow-[0_20px_60px_rgba(37,99,235,0.12)]">
                 <div className="grid gap-0 md:grid-cols-[200px_minmax(0,1fr)]">
-                    <div className="relative min-h-[180px] overflow-hidden">
+                    <div className="relative min-h-[160px] overflow-hidden md:min-h-[180px]">
                         {module.thumbnail ? (
                             <>
                                 <img
@@ -211,17 +211,17 @@ export const Dashboard = () => {
     }
 
     return (
-        <div className="container mx-auto max-w-7xl px-4 py-8">
-            <header className="mb-8">
+        <div className="container mx-auto max-w-7xl px-4 py-6 md:py-8">
+            <header className="mb-6 md:mb-8">
                 <motion.div
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="lux-panel neon-border rounded-[30px] px-6 py-7 md:px-8"
+                    className="lux-panel neon-border rounded-[22px] px-4 py-5 md:rounded-[30px] md:px-8 md:py-7"
                 >
                     <div className="flex flex-col gap-6">
                         <div>
                             <p className="text-xs font-semibold uppercase tracking-[0.34em] text-primary">Dashboard</p>
-                            <h1 className="mt-3 text-3xl font-bold text-slate-900 md:text-4xl">
+                            <h1 className="mt-2 text-2xl font-bold text-slate-900 md:mt-3 md:text-4xl">
                                 Welcome back, <span className="text-primary">{firstName}</span>
                             </h1>
                             <p className="mt-3 max-w-2xl text-base leading-7 text-slate-600">

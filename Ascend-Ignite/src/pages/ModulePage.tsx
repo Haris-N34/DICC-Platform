@@ -33,12 +33,12 @@ export const ModulePage = () => {
     if (!profile || !moduleData) return null;
 
     return (
-        <div className="container mx-auto max-w-6xl space-y-10 px-4 py-8">
+        <div className="container mx-auto max-w-6xl space-y-8 px-4 py-6 md:space-y-10 md:py-8">
             <header className="text-center">
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mx-auto max-w-3xl">
                     <p className="text-xs uppercase tracking-[0.3em] text-primary font-semibold">Course Experience</p>
-                    <h1 className="mt-4 text-4xl font-bold text-slate-900 md:text-6xl">{moduleData.title}</h1>
-                    <p className="mt-4 text-lg leading-8 text-primary/80 font-medium">{moduleData.topic}</p>
+                    <h1 className="mt-3 text-2xl font-bold text-slate-900 md:mt-4 md:text-6xl">{moduleData.title}</h1>
+                    <p className="mt-2 text-base leading-7 text-primary/80 font-medium md:mt-4 md:text-lg md:leading-8">{moduleData.topic}</p>
                 </motion.div>
             </header>
 
@@ -176,7 +176,7 @@ export const ModulePage = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="rounded-[34px] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-8 text-white md:p-12 relative overflow-hidden"
+                className="rounded-[24px] bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-6 text-white md:rounded-[34px] md:p-12 relative overflow-hidden"
             >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(37,99,235,0.1),transparent_40%),radial-gradient(circle_at_80%_50%,rgba(96,165,250,0.08),transparent_40%)]" />
                 <div className="relative flex flex-col items-center space-y-8 text-center">
