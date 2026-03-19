@@ -294,7 +294,7 @@ export const ChatBot = ({ mode, courseTitle, courseContext }: ChatBotProps) => {
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0, opacity: 0 }}
                         onClick={handleOpen}
-                        className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 ${
+                        className={`fixed bottom-22 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full shadow-lg transition-transform hover:scale-105 md:bottom-6 md:right-6 md:z-50 ${
                             mode === 'course'
                                 ? 'bg-gradient-to-br from-primary to-blue-500 shadow-[0_8px_30px_rgba(37,99,235,0.35)]'
                                 : 'bg-gradient-to-br from-primary to-primary-hover shadow-[0_8px_30px_rgba(37,99,235,0.25)]'
@@ -311,7 +311,7 @@ export const ChatBot = ({ mode, courseTitle, courseContext }: ChatBotProps) => {
                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                        className="fixed bottom-6 right-6 z-50 flex h-[500px] w-[380px] flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_25px_60px_rgba(0,0,0,0.15)]"
+                        className="fixed inset-x-0 bottom-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden bg-white shadow-[0_25px_60px_rgba(0,0,0,0.15)] md:inset-x-auto md:bottom-6 md:right-6 md:h-[500px] md:w-[380px] md:rounded-2xl md:border md:border-slate-200/80"
                     >
                         <div
                             className={`flex items-center justify-between px-5 py-4 text-white ${

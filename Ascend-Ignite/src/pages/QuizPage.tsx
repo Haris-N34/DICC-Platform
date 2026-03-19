@@ -64,21 +64,21 @@ export const QuizPage = () => {
         const passed = percentage >= 70;
 
         return (
-            <div className="min-h-[80vh] flex items-center justify-center p-4">
+            <div className="min-h-[80vh] flex items-center justify-center px-4 py-6">
                 <motion.div
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="w-full max-w-md"
                 >
                     <Card className="text-center overflow-hidden">
-                        <div className={`p-8 ${passed ? 'bg-gradient-to-br bg-blue-50' : 'bg-slate-50'}`}>
-                            <div className={`w-24 h-24 mx-auto mb-6 flex items-center justify-center rounded-full ${passed ? 'bg-blue-100 text-primary shadow-[0_0_30px_rgba(37,99,235,0.2)]' : 'bg-slate-200 text-slate-500'}`}>
-                                <Trophy className="w-12 h-12" />
+                        <div className={`p-6 md:p-8 ${passed ? 'bg-gradient-to-br bg-blue-50' : 'bg-slate-50'}`}>
+                            <div className={`w-20 h-20 mx-auto mb-4 flex items-center justify-center rounded-full md:w-24 md:h-24 md:mb-6 ${passed ? 'bg-blue-100 text-primary shadow-[0_0_30px_rgba(37,99,235,0.2)]' : 'bg-slate-200 text-slate-500'}`}>
+                                <Trophy className="w-10 h-10 md:w-12 md:h-12" />
                             </div>
-                            <h2 className="text-3xl font-bold font-heading mb-2">Quiz Complete!</h2>
+                            <h2 className="text-2xl font-bold font-heading mb-2 md:text-3xl">Quiz Complete!</h2>
                             <p className="text-slate-600">You scored <span className={passed ? 'text-primary font-bold' : ''}>{percentage}%</span></p>
                         </div>
-                        <CardContent className="p-8">
+                        <CardContent className="p-6 md:p-8">
                             <p className="text-lg text-slate-800 mb-8">
                                 {passed
                                     ? "Great job! You've demonstrated a solid understanding of this module's core concepts."
@@ -106,7 +106,7 @@ export const QuizPage = () => {
     }
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-8 md:py-16 min-h-[80vh] flex flex-col">
+        <div className="max-w-3xl mx-auto px-4 py-6 md:py-16 min-h-[80vh] flex flex-col">
             <div className="mb-8">
                 <div className="flex justify-between items-end mb-4 text-sm font-medium text-slate-500">
                     <span>{moduleTitle}</span>
@@ -126,7 +126,7 @@ export const QuizPage = () => {
                 >
                     <Card className="shadow-md border-0 ring-1 ring-slate-200">
                         <CardContent className="p-6 md:p-10">
-                            <h2 className="text-2xl font-bold font-heading text-slate-900 mb-8 leading-snug">
+                            <h2 className="text-xl font-bold font-heading text-slate-900 mb-6 leading-snug md:text-2xl md:mb-8">
                                 {currentQuestion.question}
                             </h2>
 
@@ -157,7 +157,7 @@ export const QuizPage = () => {
                                             key={index}
                                             onClick={() => handleSelectAnswer(index)}
                                             disabled={isAnswered}
-                                            className={`w-full flex items-center justify-between p-4 rounded-xl border-2 text-left text-lg transition-all ${stateClass}`}
+                                            className={`w-full flex items-center justify-between p-3 rounded-xl border-2 text-left text-base transition-all md:p-4 md:text-lg ${stateClass}`}
                                         >
                                             <span className="flex-1 pr-4">{option}</span>
                                             {Icon && <span>{Icon}</span>}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
@@ -27,23 +27,42 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const handler = () => setIsMobile(mq.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
+};
+
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const profile = getProfile();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const isMobile = useIsMobile();
   const isPublicPage = ['/', '/signup', '/onboarding'].includes(location.pathname);
   const showSidebar = profile && !isPublicPage;
   const isModulePage = location.pathname.startsWith('/module/') && !location.pathname.includes('/quiz');
+
+  // On mobile the sidebar renders as a bottom tab bar, so no left margin needed
+  const sidebarMargin = showSidebar && !isMobile
+    ? (sidebarCollapsed ? 78 : 264)
+    : 0;
 
   return (
     <div className="min-h-screen bg-slate-50 flex font-body text-slate-900">
       {showSidebar && <Sidebar onCollapseChange={setSidebarCollapsed} />}
       <div
         className="flex-1 flex flex-col transition-[margin] duration-300 ease-in-out"
-        style={{ marginLeft: showSidebar ? (sidebarCollapsed ? 78 : 264) : 0 }}
+        style={{ marginLeft: sidebarMargin }}
       >
         <Navbar />
-        <main className="flex-1">
+        <main className={`flex-1 ${showSidebar ? 'pb-20 md:pb-0' : ''}`}>
           {children}
         </main>
       </div>

@@ -17,16 +17,16 @@ export const Community = () => {
                     <motion.h1
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-4 text-4xl font-bold font-heading text-slate-900 md:text-5xl"
+                        className="mb-3 text-3xl font-bold font-heading text-slate-900 md:mb-4 md:text-5xl"
                     >
                         Community Hub
                     </motion.h1>
-                    <p className="text-xl text-slate-600">
+                    <p className="text-base text-slate-600 md:text-xl">
                         Connect with peers, mentors, and industry professionals. Building a strong network is your best defense against industry shifts.
                     </p>
                 </div>
-                <div className="app-photo-frame rounded-[30px]">
-                    <img src={appVisuals.community.hero.src} alt={appVisuals.community.hero.alt} className="h-[280px] w-full object-cover" />
+                <div className="app-photo-frame rounded-[22px] md:rounded-[30px]">
+                    <img src={appVisuals.community.hero.src} alt={appVisuals.community.hero.alt} className="h-[200px] w-full object-cover md:h-[280px]" />
                     <div className="absolute inset-x-0 bottom-0 z-10 p-6 text-white">
                         <p className="text-[10px] font-bold uppercase tracking-[0.32em] text-blue-100">{appVisuals.community.hero.eyebrow}</p>
                         <p className="mt-3 max-w-md text-sm leading-6 text-white/90">{appVisuals.community.hero.description}</p>
@@ -38,8 +38,8 @@ export const Community = () => {
                 {/* Networking Section */}
                 <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }}>
                     <Card className="h-full flex flex-col hover:border-primary/30 transition-colors">
-                        <div className="app-photo-frame rounded-b-none rounded-t-[28px]">
-                            <img src={appVisuals.community.networking} alt="Networking event" className="h-48 w-full object-cover" />
+                        <div className="app-photo-frame rounded-b-none rounded-t-[22px] md:rounded-t-[28px]">
+                            <img src={appVisuals.community.networking} alt="Networking event" className="h-36 w-full object-cover md:h-48" />
                         </div>
                         <CardHeader className="bg-primary/5 pb-8 border-b border-primary/10">
                             <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center text-primary shadow-sm mb-4">
@@ -73,8 +73,8 @@ export const Community = () => {
                 {/* Group Advising Section */}
                 <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                     <Card className="h-full flex flex-col hover:border-primary/30 transition-colors">
-                        <div className="app-photo-frame rounded-b-none rounded-t-[28px]">
-                            <img src={appVisuals.community.advising} alt="Advising workshop" className="h-48 w-full object-cover" />
+                        <div className="app-photo-frame rounded-b-none rounded-t-[22px] md:rounded-t-[28px]">
+                            <img src={appVisuals.community.advising} alt="Advising workshop" className="h-36 w-full object-cover md:h-48" />
                         </div>
                         <CardHeader className="bg-slate-50 pb-8 border-b border-slate-100">
                             <div className="w-14 h-14 bg-white rounded-xl flex items-center justify-center text-slate-700 shadow-sm mb-4">

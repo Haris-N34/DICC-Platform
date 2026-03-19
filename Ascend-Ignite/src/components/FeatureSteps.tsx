@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { motion, AnimatePresence, useScroll } from 'framer-motion';
 import { cn } from '../utils/helpers';
 
@@ -28,6 +28,12 @@ export function FeatureSteps({
         offset: ['start start', 'end end'],
     });
 
+    // Shorter scroll track on mobile
+    const isMobile = useMemo(() =>
+        typeof window !== 'undefined' ? window.innerWidth < 768 : false,
+    []);
+    const vhPerFeature = isMobile ? 60 : 78;
+
     useEffect(() => {
         const unsubscribe = scrollYProgress.on('change', (v) => {
             // Map scroll progress to feature index
@@ -44,11 +50,10 @@ export function FeatureSteps({
         <div
             ref={containerRef}
             className={cn(className)}
-            // Use a shorter scroll track so the section feels more compact between lander blocks.
-            style={{ height: `${features.length * 78}vh` }}
+            style={{ height: `${features.length * vhPerFeature}vh` }}
         >
-            <div className="sticky top-0 flex h-[78vh] items-start pt-14 md:h-[82vh] md:pt-18">
-                <div className="mx-auto w-full max-w-7xl px-6 md:px-10">
+            <div className="sticky top-0 flex h-[60vh] items-start pt-10 md:h-[82vh] md:pt-18">
+                <div className="mx-auto w-full max-w-7xl px-4 md:px-10">
                     <motion.h2
                         initial={{ y: -110, opacity: 0, scale: 0.94 }}
                         whileInView={{ y: [ -110, 18, 0 ], opacity: 1, scale: [0.94, 1.02, 1] }}
@@ -116,7 +121,7 @@ export function FeatureSteps({
                             </div>
                         </div>
 
-                        <div className="relative order-1 h-[220px] overflow-hidden rounded-2xl md:order-2 md:h-[300px] lg:h-[360px]">
+                        <div className="relative order-1 h-[180px] overflow-hidden rounded-2xl md:order-2 md:h-[300px] lg:h-[360px]">
                             <AnimatePresence mode="wait">
                                 {features.map(
                                     (feature, index) =>
