@@ -13,6 +13,7 @@
   --color-neon-purple: #d500f9;
   --color-neon-pink: #ff1744;
   --color-neon-yellow: #eeff41;
+  --color-accent-pink: #F7567C;
 
   --font-heading: "Fraunces", serif;
   --font-body: "Manrope", sans-serif;
@@ -128,6 +129,15 @@
   .neon-text-blue {
     color: #3b82f6;
     text-shadow: 0 0 10px rgba(37, 99, 235, 0.4);
+  }
+
+  .neon-glow-pink {
+    box-shadow: 0 0 15px rgba(247, 86, 124, 0.3), 0 0 45px rgba(247, 86, 124, 0.1);
+  }
+
+  .neon-text-pink {
+    color: #F7567C;
+    text-shadow: 0 0 10px rgba(247, 86, 124, 0.4);
   }
 
   .hero-spline-main {

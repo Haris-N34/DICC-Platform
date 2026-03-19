@@ -65,3 +65,85 @@ export interface Quiz {
     title: string;
     questions: QuizQuestion[];
 }
+
+// --- Practical Intelligence Module ---
+
+export interface AnalogyEntry {
+    term: string;
+    analogy: string;
+    explanation: string;
+    emoji: string;
+}
+
+export interface InsightSource {
+    label: string;
+    url: string;
+}
+
+export interface TraceNode {
+    id: string;
+    label: string;
+    role: string;
+    description: string;
+    icon: string;
+    color: string;
+}
+
+export interface TraceFlow {
+    id: string;
+    title: string;
+    nodes: TraceNode[];
+}
+
+export interface SandboxConfig {
+    id: string;
+    type: 'text-analysis' | 'prompt-playground';
+    title: string;
+    description: string;
+    placeholder: string;
+    examples: string[];
+}
+
+export interface MajorTool {
+    name: string;
+    url: string;
+    domain: string;
+    oneLiner: string;
+    howToUse: string;
+    free: boolean;
+}
+
+export interface MajorPrompt {
+    task: string;
+    prompt: string;
+}
+
+export interface MajorUseCase {
+    scenario: string;
+    toolUsed: string;
+    steps: string[];
+}
+
+export interface MajorToolkit {
+    major: string;
+    headline: string;
+    description: string;
+    tools: MajorTool[];
+    useCases: MajorUseCase[];
+    prompts: MajorPrompt[];
+}
+
+export interface ToolArticle {
+    id: string;
+    name: string;
+    tagline: string;
+    url: string;
+    domain: string;
+    free: boolean;
+    pricing?: string;
+    whatItDoes: string;
+    whyItMatters: string;
+    getStarted: string;
+    bestFor: string[];
+    studentTip: string;
+}
