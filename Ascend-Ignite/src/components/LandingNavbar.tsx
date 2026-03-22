@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Flame, ChevronDown, BookOpen, Users, Award, Mail } from 'lucide-react';
 import { Button } from './Button';
@@ -32,6 +32,7 @@ const navItems: NavItem[] = [
 ];
 
 export const LandingNavbar = () => {
+    const navigate = useNavigate();
     const [mobileOpen, setMobileOpen] = useState(false);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -74,14 +75,17 @@ export const LandingNavbar = () => {
 
                     {/* Desktop auth */}
                     <div className="hidden items-center gap-2 lg:flex">
-                        <Link to="/onboarding">
-                            <Button variant="outline" size="sm" className="border-slate-200/60 bg-white/50 text-slate-700 backdrop-blur">
-                                Log in
-                            </Button>
-                        </Link>
-                        <Link to="/signup">
-                            <Button size="sm">Sign up</Button>
-                        </Link>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="border-slate-200/60 bg-white/50 text-slate-700 backdrop-blur"
+                            onClick={() => navigate('/onboarding')}
+                        >
+                            Log in
+                        </Button>
+                        <Button size="sm" onClick={() => navigate('/signup')}>
+                            Sign up
+                        </Button>
                     </div>
 
                     {/* Mobile toggle */}
@@ -122,12 +126,25 @@ export const LandingNavbar = () => {
                         </div>
 
                         <div className="mt-4 flex flex-col gap-2 border-t border-slate-200/60 pt-4">
-                            <Link to="/onboarding" onClick={() => setMobileOpen(false)}>
-                                <Button variant="outline" className="w-full">Log in</Button>
-                            </Link>
-                            <Link to="/signup" onClick={() => setMobileOpen(false)}>
-                                <Button className="w-full">Sign up</Button>
-                            </Link>
+                            <Button
+                                variant="outline"
+                                className="w-full"
+                                onClick={() => {
+                                    setMobileOpen(false);
+                                    navigate('/onboarding');
+                                }}
+                            >
+                                Log in
+                            </Button>
+                            <Button
+                                className="w-full"
+                                onClick={() => {
+                                    setMobileOpen(false);
+                                    navigate('/signup');
+                                }}
+                            >
+                                Sign up
+                            </Button>
                         </div>
                     </motion.div>
                 )}
